@@ -9,18 +9,19 @@
 En el desarrollo de software asistido por IA, la premisa fundamental es:
 > *Un agente sin especificaciones formales alucina, improvisa dependencias y degrada la arquitectura. El humano diseña contratos, restricciones e invariantes; el agente implementa y valida contra esas restricciones.*
 
-Este repositorio sirve como **plantilla inicial (Template Repo)** para cualquier nuevo proyecto. En lugar de configurar manualmente linters, tipados, carpetas y reglas cada vez, este repositorio empaqueta el **Hito 0 (Bootstrap Constitucional)**: una entrevista técnica interactiva guiada por el agente para compilar automáticamente la arquitectura, las invariantes y los mecanismos de control.
+Este repositorio sirve como **molde o plantilla inicial (Template Repo)** para cualquier nuevo proyecto. En lugar de configurar manualmente linters, tipados, carpetas y reglas cada vez, este repositorio empaqueta el **Hito 0 (Bootstrap Constitucional)**: una entrevista técnica interactiva guiada por el agente para compilar automáticamente la arquitectura, las invariantes y los mecanismos de control del nuevo software.
 
 ---
 
-## 🚀 Cómo iniciar un nuevo proyecto (Flujo de 3 Pasos)
+## 🚀 Cómo iniciar un nuevo proyecto (Flujo en 3 Pasos)
 
-### 1. Crear nuevo repositorio desde la Plantilla
-- En GitHub o GitLab, utiliza este repositorio como **Template** (`Use this template`).
-- Asigna el nombre de tu nuevo proyecto y clónalo en tu entorno local.
+### 1. Crear tu propio repositorio desde la Plantilla
+- En GitHub, entra a [`Zer0x25/Hito-0`](https://github.com/Zer0x25/Hito-0) y pulsa el botón verde **"Use this template"** $\rightarrow$ **"Create a new repository"**.
+- Asigna el nombre de tu nuevo proyecto (ej: `portal-control-v3`, `sistema-inventarios`, `mi-app`).
+- Clónalo en tu máquina local.
 
 ### 2. Abrir en tu Entorno Agéntico
-- Abre la carpeta del proyecto en **Antigravity IDE** (o tu arnés agéntico preferido).
+- Abre la carpeta del nuevo proyecto en **Antigravity IDE** (o tu arnés agéntico preferido).
 
 ### 3. Ejecutar el Protocolo de Hito 0
 En la consola de chat del agente, simplemente escribe:
@@ -37,25 +38,27 @@ El agente asumirá el rol de **Principal Software Architect** y te guiará en un
 
 ```mermaid
 flowchart TD
-    A[Usuario: 'Inicia Hito 0'] --> B[Agente: Principal Architect]
-    B --> C1[Dimensión 1: Dominio y Actores]
+    A[Usuario: 'Inicia Hito 0'] --> G{Template Guard}
+    G -- "En molde Hito-0" --> W[Advertencia: Usar 'Use this template']
+    G -- "En nuevo repo clonado" --> B[Agente: Principal Architect]
+    B --> C1[Dimensión 1: Nombre, Dominio y Actores]
     C1 --> C2[Dimensión 2: Invariantes Críticas y Negativas]
     C2 --> C3[Dimensión 3: Stack Tecnológico y Persistencia]
     C3 --> C4[Dimensión 4: Restricciones y Prácticas Prohibidas]
     C4 --> D[Compilación Constitucional Autónoma]
     D --> E1[docs/adr/0001-arquitectura-base.md]
     D --> E2[specs/templates/feature.md personalizada]
-    D --> E3[Andamiaje base: package.json, linter, tests]
-    D --> S[Auto-Sellado de Hito 0: Reducción de Ruido de Contexto]
+    D --> E3[Andamiaje base: package.json con nombre del proyecto]
+    D --> S[Auto-Sellado: El repo adopta su identidad y archiva bootstrap.md]
     S --> F[Listo para Hito 1: Primer Feature Spec]
 ```
 
-### 🔒 Protocolo de Auto-Sellado (Self-Sealing Transition)
-Para evitar la contaminación del contexto del modelo en futuros desarrollos:
-1. Se archiva `.agents/bootstrap.md` para que ningún agente intente reiniciar la entrevista.
-2. [`STATE.md`](file://STATE.md) se actualiza de forma autónoma a **Hito 1 (En Desarrollo)**.
-3. [`AGENTS.md`](file://AGENTS.md) se limpia, dejando solo las reglas operativas de código de producción.
-4. [`README.md`](file://README.md) se transforma en la documentación oficial de tu aplicación.
+### 🔒 Protocolo de Auto-Sellado y Transición No Destructiva
+Cuando el Hito 0 concluye en tu nuevo repositorio:
+1. **La implementación base no se pisa:** `src/core/errors.ts` y `docs/adr/0000-adopcion-gobernanza-agentica.md` permanecen como cimientos inmutables.
+2. **Identidad propia:** `package.json` y `STATE.md` adoptan el nombre real de tu software y pasan a **Hito 1 (En Desarrollo)**.
+3. **Reducción de ruido de contexto:** `.agents/bootstrap.md` se auto-archiva a `.agents/bootstrap.md.done` para que los agentes futuros se enfoquen al 100% en las features del negocio.
+4. **Transformación de Documentación:** `README.md` se actualiza con el título y propósito de tu nuevo proyecto.
 
 ---
 
@@ -63,10 +66,16 @@ Para evitar la contaminación del contexto del modelo en futuros desarrollos:
 
 ```text
 ├── .agents/
-│   └── bootstrap.md            # Motor del Hito 0: Protocolo de entrevista constituyente
+│   └── bootstrap.md            # Motor del Hito 0: Protocolo de entrevista y Template Guard
+├── .github/
+│   └── workflows/
+│       └── verify.yml          # CI/CD Determinista en GitHub Actions
+├── .githooks/
+│   └── pre-commit              # Git hook local: bloquea commits si verify.sh falla
 ├── docs/
 │   └── adr/
 │       ├── .gitkeep
+│       ├── 0000-adopcion-gobernanza-agentica.md  # Constitución Génesis
 │       └── 0000-template.md    # Plantilla estándar para futuros ADRs
 ├── specs/
 │   ├── .gitkeep
@@ -74,7 +83,9 @@ Para evitar la contaminación del contexto del modelo en futuros desarrollos:
 │       ├── .gitkeep
 │       └── feature.template.md # Plantilla base de Spec-Driven Development (SDD)
 ├── src/
-│   ├── core/                   # Núcleo compartido (DB, loggers, middlewares)
+│   ├── core/
+│   │   ├── .gitkeep
+│   │   └── errors.ts           # Clase base universal DomainError y type guards
 │   └── modules/                # Dominios verticales cerrados
 ├── tests/
 │   └── modules/                # Pruebas unitarias/integración por módulo
@@ -92,18 +103,19 @@ Para evitar la contaminación del contexto del modelo en futuros desarrollos:
 
 ## 🛡️ Pilares de Excelencia Agéntica
 
-1. **Invariantes Negativas Explícitas:** Las especificaciones definen claramente qué operaciones o estados son *intolerables* (ej. saldo negativo, texto plano, mutaciones no atómicas).
-2. **Errores de Dominio Tipados:** Prohibido `throw new Error()`; todo error se tipa y se mapea a códigos HTTP semánticos (400, 404, 409).
-3. **Manejo Seguro de Entorno:** Prohibido acceder a `process.env` fuera de `src/core/config.ts`, donde Zod valida las variables en el arranque.
-4. **Conventional Commits:** Todo commit de agente sigue el estándar (`feat(modulo): ...`, `test(modulo): ...`, `fix(modulo): ...`).
-5. **Quality Gate Determinista:** Ninguna tarea se entrega si `./scripts/verify.sh` no termina con código de salida `0`.
+1. **Template Guard:** Salvaguarda que protege el molde maestro `Hito-0` contra sobreescritura accidental.
+2. **Invariantes Negativas Explícitas:** Las especificaciones definen formalmente qué operaciones o estados son *intolerables* (ej. saldo negativo, texto plano, mutaciones no atómicas).
+3. **Errores de Dominio Tipados:** Clase base `DomainError` en `src/core/errors.ts`; prohibido `throw new Error()` genérico.
+4. **Manejo Seguro de Entorno:** Prohibido acceder a `process.env` fuera de `src/core/config.ts`, donde Zod valida las variables en el arranque.
+5. **Conventional Commits:** Todo commit de agente sigue el estándar (`feat(modulo): ...`, `test(modulo): ...`, `fix(modulo): ...`).
+6. **Quality Gate Local y en la Nube:** Barrera inmutable ejecutada por `./scripts/verify.sh`, validada por el pre-commit hook y por GitHub Actions en cada PR.
 
 ---
 
 ## 🔄 Flujo de Trabajo en el Día a Día (Hito 1 en adelante)
 
 1. **Creación del Requerimiento:**
-   Copias [`specs/templates/feature.md`](file://specs/templates/feature.md) a `specs/feat-001-<modulo>.md` y completas contratos, invariantes y criterios.
+   Copias `specs/templates/feature.md` a `specs/feat-001-<modulo>.md` y completas contratos, invariantes y criterios.
 2. **Entrega al Agente:**
    > *"Implementa la especificación en `specs/feat-001-<modulo>.md`"*
 3. **Ciclo Agentic TDD:**

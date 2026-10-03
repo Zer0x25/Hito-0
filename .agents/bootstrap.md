@@ -10,18 +10,29 @@ Tu misión es entrevistar al usuario con precisión quirúrgica para extraer el 
 2. **Gobernanza Inmutable:** Las decisiones se registran en Architecture Decision Records (ADRs) que actúan como memoria persistente del sistema.
 3. **Spec-Driven Development (SDD):** Ninguna tarea de desarrollo inicia sin un archivo de especificación funcional cerrado (`specs/feat-*.md`).
 4. **Agentic TDD & Quality Gates:** El agente escribe los tests primero (fase roja), implementa el código mínimo para superarlos (fase verde) y valida mediante scripts deterministas con código de salida 0.
-5. **Auto-Sellado y Reducción de Ruido:** Al completar el Hito 0, el protocolo de entrevista se sella y archiva automáticamente para no saturar el contexto del agente con directivas obsoletas.
+5. **Transición No Destructiva y Auto-Sellado:** Al pasar a Hito 1, el repositorio se transforma en el proyecto real con su propio nombre. La implementación base no se destruye ni se pisa; el protocolo de Hito 0 se auto-archiva para enfocar el 100% de la atención en el producto.
 
 ---
 
 ## Fases de Ejecución del Hito 0
 
+### FASE 0: Salvaguarda del Molde Maestro (Template Guard)
+Antes de iniciar preguntas, verifica el nombre del repositorio remoto (`git remote get-url origin` o nombre de la carpeta):
+- **Si el repositorio es exactamente `Zer0x25/Hito-0` (el molde maestro en GitHub):**
+  Advierte amablemente al usuario:
+  > *"⚠️ Detecto que estamos trabajando directamente sobre el repositorio molde maestro (`Hito-0`). Para mantener tu plantilla virgen, se recomienda pulsar **'Use this template'** en GitHub y clonar un repositorio con el nombre de tu nuevo proyecto (ej: `mi-sistema-web`). Si deseas deliberadamente inicializar aquí en Hito-0, confírmalo y continuaremos."*
+- **Si el repositorio ya es un nuevo clon con su propio nombre (o el usuario confirma continuar):**
+  Avanza de inmediato a la Fase 1.
+
+---
+
 ### FASE 1: Confirmación de Estructura de Directorios
 Verifica que existan en el espacio de trabajo las siguientes carpetas y archivos clave:
-- `docs/adr/` (para los Architecture Decision Records)
-- `specs/templates/` (para las plantillas SDD)
-- `specs/` (para las especificaciones activas)
-- `scripts/` (para los scripts de verificación determinista)
+- `docs/adr/0000-adopcion-gobernanza-agentica.md` (Constitución fundacional)
+- `specs/templates/feature.template.md` (Plantilla SDD)
+- `specs/` (para especificaciones activas)
+- `scripts/verify.sh` (para el Quality Gate)
+- `src/core/errors.ts` (clase base para errores de dominio)
 - `src/core/` y `src/modules/` (para la arquitectura modular)
 - `tests/modules/` (para las pruebas de dominio)
 - `STATE.md` (tablero de control y memoria de estado)
@@ -39,8 +50,8 @@ Guía al usuario a través de una entrevista técnica interactiva y amigable.
 2. **Clarificación proactiva:** Si una respuesta es abierta o ambigua, propone **2 alternativas técnicas concretas** y pídele que elija una.
 3. **Cubre estrictamente estas 4 dimensiones:**
 
-#### Dimensión 1: Dominio y Actores del Sistema
-- ¿Cuál es el propósito central del software y qué problema resuelve?
+#### Dimensión 1: Nombre, Dominio y Actores del Proyecto
+- ¿Cuál es el nombre de este nuevo proyecto y qué problema central resuelve?
 - ¿Quiénes interactúan con el sistema? (ej. usuarios finales, administradores, trabajadores de campo, APIs externas).
 - ¿Cuáles son las entidades principales de datos que se van a manipular?
 
@@ -59,50 +70,46 @@ Guía al usuario a través de una entrevista técnica interactiva y amigable.
 
 ---
 
-### FASE 3: Compilación Constitucional Autónoma
-Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que procedes a compilar la constitución del proyecto y genera de forma automática los siguientes artefactos:
+### FASE 3: Compilación Constitucional Autónoma (Sin Pisarse)
+Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que compilarás la constitución del nuevo proyecto sin sobreescribir los cimientos:
 
 1. **`docs/adr/0001-arquitectura-base.md`**:
-   - Registro inmutable de la arquitectura acordada.
+   - Registro inmutable de la arquitectura técnica acordada para el nuevo proyecto.
    - Stack tecnológico detallado.
    - Estructura modular de carpetas.
-   - Catálogo de errores de dominio y convenciones de commits.
    - Reglas inmutables para agentes IA.
-   - Criterios del Quality Gate determinista.
    - Consecuencias positivas y trade-offs asumidos.
 
 2. **`specs/templates/feature.md`**:
-   - Plantilla SDD personalizada específicamente con el vocabulario, actores y entidades del dominio acordado en la entrevista.
-   - Secciones predefinidas: Alcance y límites de archivos, Contratos Zod (Input/Output), Invariantes de negocio (positivas y negativas), Errores de dominio tipados y Criterios de Aceptación (DoD).
+   - Copiar `specs/templates/feature.template.md` a `specs/templates/feature.md` personalizándola con el vocabulario, actores y entidades del dominio acordado.
 
 3. **Andamiaje de Configuración Inicial**:
-   - `package.json` (o equivalente del stack elegido) con dependencias base y scripts deterministas:
+   - `package.json` con el nombre del nuevo proyecto acordado, dependencias y scripts:
      - `"typecheck"`
      - `"lint"`
      - `"test"`
-   - `tsconfig.json` con `"strict": true` si aplica.
-   - `src/core/config.ts` (validador de entorno con Zod según `.env.example`).
-   - Actualización de `scripts/verify.sh` para invocar el Quality Gate del proyecto.
+   - `tsconfig.json` con `"strict": true`.
+   - `src/core/config.ts` (validador de entorno Zod según `.env.example`).
 
 ---
 
 ### FASE 4: Protocolo de Auto-Sellado (Cierre de Hito 0 $\rightarrow$ Hito 1)
-Para garantizar la higiene del contexto y evitar que futuros agentes se distraigan con la fase de entrevista ya completada:
+Para garantizar la higiene del contexto y consolidar la nueva identidad del proyecto:
 
 1. **Actualizar `STATE.md`:**
-   - Cambiar estado a: **Fase Actual: Hito 1 (Desarrollo Activo de Features)**.
-   - Marcar el Hito 0 como superado en la lista de hitos.
-   - Registrar la arquitectura base en el historial.
+   - Asignar el nombre del nuevo proyecto.
+   - Cambiar a **Fase Actual: Hito 1 (Desarrollo Activo de Features)**.
+   - Marcar el Hito 0 como completado con la fecha de cierre.
 
 2. **Actualizar `AGENTS.md`:**
-   - Retirar la sección de advertencia de Hito 0, dejando el archivo 100% enfocado en las reglas de ejecución de specs, Agentic TDD y Quality Gates.
+   - Retirar la sección de aviso de Hito 0, dejando el archivo 100% enfocado en las reglas de ejecución de specs, Agentic TDD y Quality Gates.
 
 3. **Archivar este protocolo:**
-   - Renombrar este archivo `.agents/bootstrap.md` a `.agents/bootstrap.md.done` para que los agentes ya no lo consideren como tarea pendiente.
+   - Renombrar este archivo `.agents/bootstrap.md` a `.agents/bootstrap.md.done` para que ningún agente lo considere tarea pendiente.
 
 4. **Transformar `README.md`:**
-   - Adaptar el título y descripción de `README.md` con el nombre, propósito y arquitectura real del nuevo proyecto.
+   - Actualizar el título y descripción de `README.md` con el nombre, propósito y arquitectura real del nuevo proyecto.
 
 5. **Entrega y Transición:**
-   - Informar al usuario que la constitución está completada y sellada con éxito.
-   - Guiarlo a crear la primera especificación funcional: `specs/feat-001-<nombre>.md`.
+   - Informar al usuario que el proyecto está formalmente inicializado con su propia identidad.
+   - Invitarlo a redactar el primer requerimiento en `specs/feat-001-<modulo>.md`.

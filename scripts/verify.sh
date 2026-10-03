@@ -24,8 +24,19 @@ if [ ! -f "package.json" ]; then
   echo -e "${YELLOW}[ESTADO] Repositorio en fase de semilla (Hito 0).${NC}"
   echo -e "${BLUE}--> Verificando integridad estructural del blueprint...${NC}"
 
+  ARCHIVOS_CRITICOS=(
+    "AGENTS.md"
+    "STATE.md"
+    ".agents/bootstrap.md"
+    "docs/adr/0000-template.md"
+    "docs/adr/0000-adopcion-gobernanza-agentica.md"
+    "specs/templates/feature.template.md"
+    ".env.example"
+    "src/core/errors.ts"
+  )
+
   ERRORES=0
-  for ARCHIVO in "AGENTS.md" "STATE.md" ".agents/bootstrap.md" "docs/adr/0000-template.md" "specs/templates/feature.template.md" ".env.example"; do
+  for ARCHIVO in "${ARCHIVOS_CRITICOS[@]}"; do
     if [ -f "$ARCHIVO" ]; then
       echo -e "${GREEN}✓ Presente: $ARCHIVO${NC}"
     else
@@ -48,7 +59,7 @@ if [ ! -f "package.json" ]; then
   fi
 fi
 
-# FASE B: Verificación de Código de Producción (Post Hito 0)
+# FASE B: Verificación de Código de Producción (Post Hito 0 / Hito 1+)
 echo -e "${BLUE}[ESTADO] Entorno compilado detectado (package.json presente).${NC}"
 
 # 1. Chequeo de Tipos Estricto
