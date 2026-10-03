@@ -25,7 +25,7 @@ if [ ! -f "package.json" ]; then
   echo -e "${BLUE}--> Verificando integridad estructural del blueprint...${NC}"
 
   ERRORES=0
-  for ARCHIVO in "AGENTS.md" "STATE.md" ".agents/bootstrap.md" "docs/adr/0000-template.md" "specs/templates/feature.template.md"; do
+  for ARCHIVO in "AGENTS.md" "STATE.md" ".agents/bootstrap.md" "docs/adr/0000-template.md" "specs/templates/feature.template.md" ".env.example"; do
     if [ -f "$ARCHIVO" ]; then
       echo -e "${GREEN}✓ Presente: $ARCHIVO${NC}"
     else

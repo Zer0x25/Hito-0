@@ -10,6 +10,7 @@ Tu misión es entrevistar al usuario con precisión quirúrgica para extraer el 
 2. **Gobernanza Inmutable:** Las decisiones se registran en Architecture Decision Records (ADRs) que actúan como memoria persistente del sistema.
 3. **Spec-Driven Development (SDD):** Ninguna tarea de desarrollo inicia sin un archivo de especificación funcional cerrado (`specs/feat-*.md`).
 4. **Agentic TDD & Quality Gates:** El agente escribe los tests primero (fase roja), implementa el código mínimo para superarlos (fase verde) y valida mediante scripts deterministas con código de salida 0.
+5. **Auto-Sellado y Reducción de Ruido:** Al completar el Hito 0, el protocolo de entrevista se sella y archiva automáticamente para no saturar el contexto del agente con directivas obsoletas.
 
 ---
 
@@ -24,8 +25,9 @@ Verifica que existan en el espacio de trabajo las siguientes carpetas y archivos
 - `src/core/` y `src/modules/` (para la arquitectura modular)
 - `tests/modules/` (para las pruebas de dominio)
 - `STATE.md` (tablero de control y memoria de estado)
+- `.env.example` (plantilla de variables de entorno)
 
-Si alguna no existe, créala silenciosamente con su respectivo `.gitkeep`.
+Si alguna no existe, créala silenciosamente con su respectivo `.gitkeep` o archivo base.
 
 ---
 
@@ -57,46 +59,50 @@ Guía al usuario a través de una entrevista técnica interactiva y amigable.
 
 ---
 
-### FASE 3: Cierre y Compilación Constitucional Autónoma
+### FASE 3: Compilación Constitucional Autónoma
 Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que procedes a compilar la constitución del proyecto y genera de forma automática los siguientes artefactos:
 
 1. **`docs/adr/0001-arquitectura-base.md`**:
    - Registro inmutable de la arquitectura acordada.
    - Stack tecnológico detallado.
    - Estructura modular de carpetas.
+   - Catálogo de errores de dominio y convenciones de commits.
    - Reglas inmutables para agentes IA.
    - Criterios del Quality Gate determinista.
    - Consecuencias positivas y trade-offs asumidos.
 
-2. **`AGENTS.md` (en la raíz)**:
-   - Protocolo operativo diario para cualquier arnés de IA (Antigravity, Claude Code, Cursor, Roo Code, etc.).
-   - Jerarquía de verdad (los ADR prevalecen sobre cualquier prompt).
-   - Ciclo de desarrollo obligatorio (Agentic TDD: Red -> Green -> Refactor).
-   - Comandos exactos del Quality Gate (`typecheck`, `lint`, `test`).
-   - Política estricta de aislamiento de archivos (Boundary Enforcement).
-
-3. **`specs/templates/feature.md`**:
+2. **`specs/templates/feature.md`**:
    - Plantilla SDD personalizada específicamente con el vocabulario, actores y entidades del dominio acordado en la entrevista.
-   - Secciones predefinidas: Alcance y límites de archivos, Contratos Zod (Input/Output), Invariantes de negocio (positivas y negativas) y Criterios de Aceptación (DoD).
+   - Secciones predefinidas: Alcance y límites de archivos, Contratos Zod (Input/Output), Invariantes de negocio (positivas y negativas), Errores de dominio tipados y Criterios de Aceptación (DoD).
 
-4. **Actualización de `STATE.md`**:
-   - Actualizar el estado a:
-     - **Fase Actual:** `Hito 1 (Diseño de Primeras Especificaciones)`
-     - **Stack Registrado:** Según lo acordado en ADR-0001
-     - **Próximo Paso Recomendado:** Redactar `specs/feat-001-<nombre>.md`
-
-5. **Andamiaje de Configuración Inicial**:
+3. **Andamiaje de Configuración Inicial**:
    - `package.json` (o equivalente del stack elegido) con dependencias base y scripts deterministas:
      - `"typecheck"`
      - `"lint"`
      - `"test"`
    - `tsconfig.json` con `"strict": true` si aplica.
+   - `src/core/config.ts` (validador de entorno con Zod según `.env.example`).
    - Actualización de `scripts/verify.sh` para invocar el Quality Gate del proyecto.
 
 ---
 
-### FASE 4: Entrega al Usuario y Transición a Hito 1
-Al concluir la generación de artefactos:
-1. Presenta un breve resumen de las decisiones acordadas y los archivos generados con sus enlaces respectivos.
-2. Explica cómo crear la primera especificación (`specs/feat-001-<nombre>.md`) a partir de la plantilla generada.
-3. Invita al usuario a definir su primer requerimiento funcional para comenzar el desarrollo en Hito 1.
+### FASE 4: Protocolo de Auto-Sellado (Cierre de Hito 0 $\rightarrow$ Hito 1)
+Para garantizar la higiene del contexto y evitar que futuros agentes se distraigan con la fase de entrevista ya completada:
+
+1. **Actualizar `STATE.md`:**
+   - Cambiar estado a: **Fase Actual: Hito 1 (Desarrollo Activo de Features)**.
+   - Marcar el Hito 0 como superado en la lista de hitos.
+   - Registrar la arquitectura base en el historial.
+
+2. **Actualizar `AGENTS.md`:**
+   - Retirar la sección de advertencia de Hito 0, dejando el archivo 100% enfocado en las reglas de ejecución de specs, Agentic TDD y Quality Gates.
+
+3. **Archivar este protocolo:**
+   - Renombrar este archivo `.agents/bootstrap.md` a `.agents/bootstrap.md.done` para que los agentes ya no lo consideren como tarea pendiente.
+
+4. **Transformar `README.md`:**
+   - Adaptar el título y descripción de `README.md` con el nombre, propósito y arquitectura real del nuevo proyecto.
+
+5. **Entrega y Transición:**
+   - Informar al usuario que la constitución está completada y sellada con éxito.
+   - Guiarlo a crear la primera especificación funcional: `specs/feat-001-<nombre>.md`.

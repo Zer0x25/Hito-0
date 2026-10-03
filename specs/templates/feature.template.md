@@ -45,7 +45,20 @@
 
 ---
 
-## 3. Invariantes del Negocio
+## 3. Catálogo de Errores de Dominio Tipados
+```typescript
+// Errores controlados que este módulo puede arrojar
+export type [Modulo]ErrorCode =
+  | "[MODULO]_NOT_FOUND"
+  | "[MODULO]_ALREADY_EXISTS"
+  | "INVALID_OPERATION";
+```
+- Cada error de dominio debe mapearse a un código HTTP semántico en el controlador (400, 401, 403, 404, 409).
+- Prohibido lanzar `throw new Error("mensaje")` genéricos sin código de dominio tipado.
+
+---
+
+## 4. Invariantes del Negocio
 
 ### A. Invariantes Positivas (Garantías de Comportamiento)
 1. **[Garantía 1]:** [Ej. Toda respuesta exitosa debe devolver la entidad completa con timestamp en UTC].
@@ -62,7 +75,7 @@
 
 ---
 
-## 4. Criterios de Aceptación (Definition of Done)
+## 5. Criterios de Aceptación (Definition of Done)
 
 - [ ] **Tests de Esquemas de Validación (Zod):**
   - [ ] Rechazo de entradas incompletas o tipos erróneos con mensajes claros.
@@ -71,6 +84,8 @@
   - [ ] Ejecución exitosa de flujo principal con persistencia simulada por mocks.
   - [ ] Rechazo de operaciones duplicadas o no autorizadas arrojando el error de dominio correspondiente.
   - [ ] Confirmación de que las **Invariantes Negativas** son validadas y rechazan estados inválidos.
+- [ ] **Higiene de Commits:**
+  - [ ] Todo commit sigue el formato Conventional Commits (`feat([modulo]): ...`, `test([modulo]): ...`).
 - [ ] **Quality Gate Determinista (Salida obligatoria: Código 0):**
   - [ ] `npm run typecheck` (sin errores de tipos en modo estricto)
   - [ ] `npm run lint` (sin advertencias ni errores de estilo)
