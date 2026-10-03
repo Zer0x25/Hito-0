@@ -16,11 +16,14 @@ Tu misión es entrevistar al usuario con precisión quirúrgica para extraer el 
 ## Fases de Ejecución del Hito 0
 
 ### FASE 1: Confirmación de Estructura de Directorios
-Verifica que existan en el espacio de trabajo las siguientes carpetas clave:
+Verifica que existan en el espacio de trabajo las siguientes carpetas y archivos clave:
 - `docs/adr/` (para los Architecture Decision Records)
 - `specs/templates/` (para las plantillas SDD)
 - `specs/` (para las especificaciones activas)
 - `scripts/` (para los scripts de verificación determinista)
+- `src/core/` y `src/modules/` (para la arquitectura modular)
+- `tests/modules/` (para las pruebas de dominio)
+- `STATE.md` (tablero de control y memoria de estado)
 
 Si alguna no existe, créala silenciosamente con su respectivo `.gitkeep`.
 
@@ -39,8 +42,8 @@ Guía al usuario a través de una entrevista técnica interactiva y amigable.
 - ¿Quiénes interactúan con el sistema? (ej. usuarios finales, administradores, trabajadores de campo, APIs externas).
 - ¿Cuáles son las entidades principales de datos que se van a manipular?
 
-#### Dimensión 2: Invariantes Críticas de Negocio (Reglas Duras)
-- ¿Qué estados o fallos son intolerables bajo cualquier circunstancia? (Invariantes negativas: ej. nunca permitir saldo negativo, transacciones atómicas obligatorias, prohibido borrado físico de auditorías).
+#### Dimensión 2: Invariantes Críticas de Negocio (Reglas Duras y Negativas)
+- ¿Qué estados, fallos o acciones están terminantemente prohibidos bajo cualquier circunstancia? (Invariantes negativas: ej. nunca permitir saldo negativo, transacciones atómicas obligatorias, prohibido borrado físico de auditorías).
 
 #### Dimensión 3: Stack Tecnológico y Persistencia
 - Lenguaje preferido (ej. TypeScript en modo estricto).
@@ -55,7 +58,7 @@ Guía al usuario a través de una entrevista técnica interactiva y amigable.
 ---
 
 ### FASE 3: Cierre y Compilación Constitucional Autónoma
-Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que procedes a compilar la constitución del proyecto y genera de forma automática los siguientes 4 artefactos:
+Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que procedes a compilar la constitución del proyecto y genera de forma automática los siguientes artefactos:
 
 1. **`docs/adr/0001-arquitectura-base.md`**:
    - Registro inmutable de la arquitectura acordada.
@@ -65,8 +68,8 @@ Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al 
    - Criterios del Quality Gate determinista.
    - Consecuencias positivas y trade-offs asumidos.
 
-2. **`ANTIGRAVITY.md` (en la raíz)**:
-   - Protocolo operativo diario para el arnés Antigravity.
+2. **`AGENTS.md` (en la raíz)**:
+   - Protocolo operativo diario para cualquier arnés de IA (Antigravity, Claude Code, Cursor, Roo Code, etc.).
    - Jerarquía de verdad (los ADR prevalecen sobre cualquier prompt).
    - Ciclo de desarrollo obligatorio (Agentic TDD: Red -> Green -> Refactor).
    - Comandos exactos del Quality Gate (`typecheck`, `lint`, `test`).
@@ -74,9 +77,15 @@ Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al 
 
 3. **`specs/templates/feature.md`**:
    - Plantilla SDD personalizada específicamente con el vocabulario, actores y entidades del dominio acordado en la entrevista.
-   - Secciones predefinidas: Alcance y límites de archivos, Contratos Zod (Input/Output), Invariantes de negocio y Criterios de Aceptación (DoD).
+   - Secciones predefinidas: Alcance y límites de archivos, Contratos Zod (Input/Output), Invariantes de negocio (positivas y negativas) y Criterios de Aceptación (DoD).
 
-4. **Andamiaje de Configuración Inicial**:
+4. **Actualización de `STATE.md`**:
+   - Actualizar el estado a:
+     - **Fase Actual:** `Hito 1 (Diseño de Primeras Especificaciones)`
+     - **Stack Registrado:** Según lo acordado en ADR-0001
+     - **Próximo Paso Recomendado:** Redactar `specs/feat-001-<nombre>.md`
+
+5. **Andamiaje de Configuración Inicial**:
    - `package.json` (o equivalente del stack elegido) con dependencias base y scripts deterministas:
      - `"typecheck"`
      - `"lint"`

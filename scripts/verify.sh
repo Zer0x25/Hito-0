@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Script de Quality Gate Determinista para Antigravity y Agentes Autónomos
+# Script de Quality Gate Determinista para Agentes de Software
 # ==============================================================================
 # Este script actúa como barrera inmutable. Si algún paso falla (código != 0),
 # la ejecución se detiene de inmediato con salida 1, forzando al agente a autocorregir.
@@ -19,14 +19,37 @@ echo -e "${BLUE}======================================================${NC}"
 echo -e "${BLUE}   QUALITY GATE DETERMINISTA - VERIFICACIÓN DE REPO   ${NC}"
 echo -e "${BLUE}======================================================${NC}"
 
-# Si el repositorio aún está en fase inicial (Hito 0 previo a andamiaje)
+# FASE A: Verificación en estado Semilla (Hito 0 previo a andamiaje)
 if [ ! -f "package.json" ]; then
-  echo -e "${YELLOW}[AVISO] No se detectó 'package.json'.${NC}"
-  echo -e "${YELLOW}El repositorio se encuentra en estado de semilla (Hito 0).${NC}"
-  echo -e "${YELLOW}Ejecuta el protocolo de entrevista en '.antigravity/bootstrap.md' para compilar la arquitectura inicial.${NC}"
-  echo -e "${GREEN}Verificación estructural preliminar: APROBADA (Semilla lista).${NC}"
-  exit 0
+  echo -e "${YELLOW}[ESTADO] Repositorio en fase de semilla (Hito 0).${NC}"
+  echo -e "${BLUE}--> Verificando integridad estructural del blueprint...${NC}"
+
+  ERRORES=0
+  for ARCHIVO in "AGENTS.md" "STATE.md" ".agents/bootstrap.md" "docs/adr/0000-template.md" "specs/templates/feature.template.md"; do
+    if [ -f "$ARCHIVO" ]; then
+      echo -e "${GREEN}✓ Presente: $ARCHIVO${NC}"
+    else
+      echo -e "${RED}✗ Falta archivo crítico: $ARCHIVO${NC}"
+      ERRORES=$((ERRORES + 1))
+    fi
+  done
+
+  if [ $ERRORES -eq 0 ]; then
+    echo -e "\n${GREEN}======================================================${NC}"
+    echo -e "${GREEN}✓ Semilla estructural íntegra y lista para Hito 0.${NC}"
+    echo -e "${GREEN}Instrucción: Abre el agente y di 'Inicia Hito 0'${NC}"
+    echo -e "${GREEN}======================================================${NC}"
+    exit 0
+  else
+    echo -e "\n${RED}======================================================${NC}"
+    echo -e "${RED}✗ La estructura semilla está incompleta ($ERRORES errores).${NC}"
+    echo -e "${RED}======================================================${NC}"
+    exit 1
+  fi
 fi
+
+# FASE B: Verificación de Código de Producción (Post Hito 0)
+echo -e "${BLUE}[ESTADO] Entorno compilado detectado (package.json presente).${NC}"
 
 # 1. Chequeo de Tipos Estricto
 echo -e "\n${BLUE}--> [Paso 1/3] Verificación de Tipos (Typecheck)...${NC}"

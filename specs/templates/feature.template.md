@@ -41,19 +41,24 @@
   - `id`: Identificador único generado.
   - `status`: Estado resultante.
   - `createdAt`: Timestamp en UTC.
-  - *(Garantía: ningun campo sensible o privado expuesto).*
+  - *(Garantía: ningún campo sensible o privado expuesto).*
 
 ---
 
-## 3. Invariantes del Negocio (Reglas Duras y Negativas)
+## 3. Invariantes del Negocio
 
-1. **[Invariante 1]:** [Qué nunca debe ocurrir. Ej. Una operación no puede ejecutarse si el estado es diferente a X].
-2. **[Invariante 2 - Atomicidad]:** [Toda operación que modifique múltiples entidades debe ser atómica mediante transacciones de DB].
-3. **[Invariante 3 - Manejo de Errores]:** [Si una validación o dependencia falla, revertir cambios y retornar un error de dominio controlado específico].
-4. **[Invariante 4 - Pureza de Capas]:**
-   - El controlador solo valida payloads vía Zod y mapea errores de dominio a códigos HTTP.
-   - El servicio contiene la lógica pura de negocio y las invariantes.
-   - El repositorio encapsula exclusivamente la persistencia y queries a la base de datos.
+### A. Invariantes Positivas (Garantías de Comportamiento)
+1. **[Garantía 1]:** [Ej. Toda respuesta exitosa debe devolver la entidad completa con timestamp en UTC].
+2. **[Garantía 2]:** [Ej. Las transacciones deben asegurar persistencia atómica en todas las tablas afectadas].
+
+### B. Invariantes Negativas (Prohibiciones Duras: Lo que NUNCA debe ocurrir)
+1. **[Prohibición 1]:** [Ej. Bajo ninguna circunstancia el saldo de una cuenta puede ser menor a cero; debe rechazar y lanzar error de dominio específico].
+2. **[Prohibición 2]:** [Ej. Queda estrictamente prohibido el borrado físico de registros; solo se permiten bajas lógicas con auditoría].
+3. **[Prohibición 3]:** [Ej. Jamás persistir o exponer contraseñas o tokens en texto plano].
+4. **[Prohibición 4 - Pureza de Capas]:**
+   - El controlador jamás debe interactuar con la base de datos directamente ni contener lógica de negocio.
+   - El servicio jamás debe recibir ni manipular objetos de transporte HTTP (`Request`, `Response`).
+   - El repositorio jamás debe alterar lógica de invariantes; su única función es persistir y consultar.
 
 ---
 
@@ -65,7 +70,7 @@
 - [ ] **Tests de Servicio (Vitest / Framework de pruebas):**
   - [ ] Ejecución exitosa de flujo principal con persistencia simulada por mocks.
   - [ ] Rechazo de operaciones duplicadas o no autorizadas arrojando el error de dominio correspondiente.
-  - [ ] Confirmación de que las invariantes negativas no se vulneran.
+  - [ ] Confirmación de que las **Invariantes Negativas** son validadas y rechazan estados inválidos.
 - [ ] **Quality Gate Determinista (Salida obligatoria: Código 0):**
   - [ ] `npm run typecheck` (sin errores de tipos en modo estricto)
   - [ ] `npm run lint` (sin advertencias ni errores de estilo)
