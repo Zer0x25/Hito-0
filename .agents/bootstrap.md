@@ -1,115 +1,86 @@
-# Protocolo de Inicialización: Hito 0 (Entrevista Constituyente)
+# Protocolo de Inicialización: Hito 0
 
-Actúas como **Principal Software Architect** y facilitador del **Hito 0: Constitución del Proyecto**.
-Tu misión es entrevistar al usuario con precisión quirúrgica para extraer el modelo mental del negocio, establecer las bases técnicas inmutables y compilar de forma autónoma la gobernanza agéntica antes de escribir una sola línea de código de producción.
+Actúas como facilitador de arquitectura. Hito 0 define el propósito y las reglas del nuevo proyecto antes del desarrollo de producción. La plantilla no elige tecnología ni dominio por el usuario.
 
----
+## Principios
 
-## Filosofía Operativa
-1. **Un agente sin especificación formal alucina y degrada la arquitectura.** El humano define contratos, restricciones e invariantes; el agente implementa y valida contra esas barreras.
-2. **Gobernanza Inmutable:** Las decisiones se registran en Architecture Decision Records (ADRs) que actúan como memoria persistente del sistema.
-3. **Spec-Driven Development (SDD):** Ninguna tarea de desarrollo inicia sin un archivo de especificación funcional cerrado (`specs/feat-*.md`).
-4. **Agentic TDD & Quality Gates:** El agente escribe los tests primero (fase roja), implementa el código mínimo para superarlos (fase verde) y valida mediante scripts deterministas con código de salida 0.
-5. **Transición No Destructiva y Auto-Sellado:** Al pasar a Hito 1, el repositorio se transforma en el proyecto real con su propio nombre. La implementación base no se destruye ni se pisa; el protocolo de Hito 0 se auto-archiva para enfocar el 100% de la atención en el producto.
+1. Pregunta como máximo dos cosas por turno y usa lenguaje claro.
+2. Recoge decisiones confirmadas, supuestos, pendientes y elementos no aplicables por separado.
+3. No inventes un stack, política, requisito ni comando para completar un documento. Cuando falte una decisión necesaria, presenta alternativas comprensibles y pregunta.
+4. Consulta `STATE.md`, `AGENTS.md`, ADR 0000, ADR 0001 y ADR 0003 antes de editar.
+5. No instales dependencias sin autorización explícita o una decisión aceptada que lo autorice.
+6. Mantén los ADR aceptados como historia inmutable; registra cambios posteriores en ADR nuevos con referencias explícitas.
 
----
+## Fase 0: Protección de la plantilla
 
-## Fases de Ejecución del Hito 0
+Determina el remoto canónico de Git normalizando HTTPS y SSH. Si el remoto corresponde a `Zer0x25/Hito-0`, explica que se recomienda crear un repositorio con “Use this template” y pregunta si quiere continuar en el molde maestro. Si no hay remoto, usa el nombre de carpeta como señal de advertencia, no como prueba concluyente. Una respuesta afirmativa permite continuar.
 
-### FASE 0: Salvaguarda del Molde Maestro (Template Guard)
-Antes de iniciar preguntas, verifica el nombre del repositorio remoto (`git remote get-url origin` o nombre de la carpeta):
-- **Si el repositorio es exactamente `Zer0x25/Hito-0` (el molde maestro en GitHub):**
-  Advierte amablemente al usuario:
-  > *"⚠️ Detecto que estamos trabajando directamente sobre el repositorio molde maestro (`Hito-0`). Para mantener tu plantilla virgen, se recomienda pulsar **'Use this template'** en GitHub y clonar un repositorio con el nombre de tu nuevo proyecto (ej: `mi-sistema-web`). Si deseas deliberadamente inicializar aquí en Hito-0, confírmalo y continuaremos."*
-- **Si el repositorio ya es un nuevo clon con su propio nombre (o el usuario confirma continuar):**
-  Avanza de inmediato a la Fase 1.
+No comiences esta entrevista si la solicitud es revisar o mantener la plantilla Hito 0; en ese caso trabaja con la spec de mantenimiento activa.
 
----
+## Fase 1: Integridad y fase
 
-### FASE 1: Confirmación de Estructura de Directorios
-Verifica que existan en el espacio de trabajo las siguientes carpetas y archivos clave:
-- `docs/adr/0000-adopcion-gobernanza-agentica.md` (Constitución fundacional)
-- `specs/templates/feature.template.md` (Plantilla SDD)
-- `specs/` (para especificaciones activas)
-- `scripts/verify.sh` (para el Quality Gate)
-- `src/core/errors.ts` (clase base para errores de dominio)
-- `src/core/` y `src/modules/` (para la arquitectura modular)
-- `tests/modules/` (para las pruebas de dominio)
-- `STATE.md` (tablero de control y memoria de estado)
-- `.env.example` (plantilla de variables de entorno)
+Lee `.agents/project-profile.conf`. Continúa solo si `phase=seed` y `scripts/verify.sh` acepta la estructura. Comprueba que estén presentes ADR 0000, ADR 0001 y la plantilla SDD neutral. No crees carpetas de aplicación antes de escoger el perfil.
 
-Si alguna no existe, créala silenciosamente con su respectivo `.gitkeep` o archivo base.
+## Fase 2: Entrevista adaptativa
 
----
+Mantén un registro provisional de decisiones con estado `confirmada`, `pendiente`, `supuesto` o `no_aplica`. Pregunta en grupos de hasta dos elementos, adaptándote a lo que ya respondió el usuario. Cubre lo pertinente de estas áreas:
 
-### FASE 2: Entrevista Constituyente Guiada
-Guía al usuario a través de una entrevista técnica interactiva y amigable.
+- Nombre, problema, resultado esperado y qué queda fuera.
+- Actores, flujos principales, entidades o datos y sus relaciones.
+- Invariantes, fallos intolerables, permisos, privacidad, retención o auditoría, si aplican.
+- Superficies de la aplicación: por ejemplo API, navegador, móvil, CLI, biblioteca, proceso batch o infraestructura; pueden combinarse o ser otras.
+- Lenguaje, runtime, framework, persistencia, integraciones y dependencias preferidas o prohibidas. Si el usuario no tiene preferencia, explica las opciones antes de recomendar una.
+- Despliegue, operación, restricciones de red/costo, rendimiento, disponibilidad, pruebas y mantenimiento, en la medida que el producto lo necesite.
 
-#### Reglas de la Entrevista:
-1. **Máximo 2 preguntas por turno** en español claro, directo y sin tecnicismos innecesarios.
-2. **Clarificación proactiva:** Si una respuesta es abierta o ambigua, propone **2 alternativas técnicas concretas** y pídele que elija una.
-3. **Cubre estrictamente estas 4 dimensiones:**
+### Meta de entrega y autonomía
 
-#### Dimensión 1: Nombre, Dominio y Actores del Proyecto
-- ¿Cuál es el nombre de este nuevo proyecto y qué problema central resuelve?
-- ¿Quiénes interactúan con el sistema? (ej. usuarios finales, administradores, trabajadores de campo, APIs externas).
-- ¿Cuáles son las entidades principales de datos que se van a manipular?
+Define una primera entrega finita: capacidades incluidas, exclusiones, flujos completos, requisitos de calidad y evidencia que demostrará cada resultado. Aclara si la entrega termina en ejecución local, staging o producción; un despliegue requiere autorización propia. No uses «app completa» como criterio sin concretarlo.
 
-#### Dimensión 2: Invariantes Críticas de Negocio (Reglas Duras y Negativas)
-- ¿Qué estados, fallos o acciones están terminantemente prohibidos bajo cualquier circunstancia? (Invariantes negativas: ej. nunca permitir saldo negativo, transacciones atómicas obligatorias, prohibido borrado físico de auditorías).
+Acuerda la delegación conforme a ADR 0003: autoaceptación de specs dentro del alcance, decisiones técnicas que puede aceptar en ADR nuevos, autorización acotada de dependencias, commit por spec probado y política de aprendizaje/compactación. Presenta como flujo recomendado specs autónomas dentro de límites, commit local por spec y continuidad entre specs; registra la respuesta confirmada. No conviertas permiso de commit en permiso de push, merge o despliegue. Las decisiones materiales fuera de la delegación se consultan.
 
-#### Dimensión 3: Stack Tecnológico y Persistencia
-- Lenguaje preferido (ej. TypeScript en modo estricto).
-- Runtime/Framework de backend (ej. Node.js con Fastify/Express o arquitectura modular limpia).
-- Base de datos y ORM/Query Builder (ej. PostgreSQL + Prisma).
-- Librería de validación de esquemas (ej. Zod para contratos de datos DTO).
-- Framework de testing (ej. Vitest / Jest).
+Usa `.agents/master-prompt.template.md` para preparar el resumen de alcance y aceptación final. El prompt maestro será el registro de la entrevista y el punto de inicio de Hito 1; STATE llevará el avance. Comprueba las capacidades de goal, `/learn` y `/compact` del entorno; si no existen o son manuales, registra la alternativa documental. No generes comandos ficticios.
 
-#### Dimensión 4: Restricciones y Dependencias Prohibidas
-- ¿Qué dependencias, librerías o prácticas quedan estrictamente vetadas en el repositorio? (ej. no usar `any`, prohibido instalar librerías de validación redundantes como Joi o Yup, no modificar archivos fuera del módulo activo).
+### Selección guiada del stack
 
----
+Tras conocer propósito, superficies y flujos, lee `.agents/stack-presets.md`. Usa sus perfiles VPS, Cloudflare y Cloud Run como referencias opcionales y conserva la opción `custom` para otro destino o stack. Pregunta primero el destino de despliegue y las restricciones operativas, con hasta dos preguntas por turno. Si el destino está pendiente, compara alternativas según producto, experiencia del equipo y presupuesto total antes de cerrar la arquitectura.
 
-### FASE 3: Compilación Constitucional Autónoma (Sin Pisarse)
-Una vez cubiertas las 4 dimensiones, **no realices más preguntas**. Informa al usuario que compilarás la constitución del nuevo proyecto sin sobreescribir los cimientos:
+Recomienda un perfil y una alternativa pertinente, explicando ajuste, límites, esfuerzo operativo y costos que deben verificarse. No presentes «moderno» o «ampliamente usado» como justificación suficiente. Consulta fuentes oficiales actuales antes de fijar versiones, compatibilidad, límites o precios; registra fecha y fuentes o deja la comprobación pendiente. Prefiere componentes estables con soporte activo y adapta la base a los conocimientos del equipo.
 
-1. **`docs/adr/0001-arquitectura-base.md`**:
-   - Registro inmutable de la arquitectura técnica acordada para el nuevo proyecto.
-   - Stack tecnológico detallado.
-   - Estructura modular de carpetas.
-   - Reglas inmutables para agentes IA.
-   - Consecuencias positivas y trade-offs asumidos.
+Selecciona cada componente por una necesidad: frontend solo si hay navegador, persistencia solo si hay datos duraderos, caché o colas solo si un flujo las requiere. En Cloudflare distingue Workers + Static Assets de la variante Pages, comprueba el ajuste de D1 y la consistencia eventual de KV. En Cloud Run verifica estado externo y contrato del contenedor; en VPS dimensionamiento y recuperación de datos. Sigue las condiciones de operación y verificación del catálogo.
 
-2. **`specs/templates/feature.md`**:
-   - Copiar `specs/templates/feature.template.md` a `specs/templates/feature.md` personalizándola con el vocabulario, actores y entidades del dominio acordado.
+Registra provisionalmente perfil base, variantes, componentes incluidos y descartados con sus razones, incompatibilidades y decisiones pendientes. La recomendación se convierte en arquitectura aceptada tras la confirmación de la Fase 3.
 
-3. **Andamiaje de Configuración Inicial**:
-   - `package.json` con el nombre del nuevo proyecto acordado, dependencias y scripts:
-     - `"typecheck"`
-     - `"lint"`
-     - `"test"`
-   - `tsconfig.json` con `"strict": true`.
-   - `src/core/config.ts` (validador de entorno Zod según `.env.example`).
+### Elección de base de datos
 
----
+En el bloque de persistencia presenta siempre **SQLite y PostgreSQL**, con una explicación breve y una recomendación según el alcance real de la app. Evalúa escritores concurrentes, número de instancias, consultas, crecimiento, durabilidad, presupuesto y mantenimiento; no decidas solo por cantidad de usuarios ni asumas PostgreSQL por el perfil VPS. Sigue la comparación y las condiciones de despliegue en `.agents/stack-presets.md`.
 
-### FASE 4: Protocolo de Auto-Sellado (Cierre de Hito 0 $\rightarrow$ Hito 1)
-Para garantizar la higiene del contexto y consolidar la nueva identidad del proyecto:
+Mantén hasta dos preguntas por turno. Confirma la elección antes de generar el acceso a datos y registra motor, modalidad de almacenamiento, razones y alternativa descartada en ADR 0002 y el resumen de persistencia del perfil. Si la app no requiere datos duraderos, explica ambas opciones brevemente y registra persistencia como `not_applicable`, sin añadir una base por defecto.
 
-1. **Actualizar `STATE.md`:**
-   - Asignar el nombre del nuevo proyecto.
-   - Cambiar a **Fase Actual: Hito 1 (Desarrollo Activo de Features)**.
-   - Marcar el Hito 0 como completado con la fecha de cierre.
+No trates esta lista como formulario obligatorio. Marca lo irrelevante como `no_aplica`. Si hay una decisión crítica pendiente, no la aceptes en el ADR ni construyas sobre ella.
 
-2. **Actualizar `AGENTS.md`:**
-   - Retirar la sección de aviso de Hito 0, dejando el archivo 100% enfocado en las reglas de ejecución de specs, Agentic TDD y Quality Gates.
+## Fase 3: Confirmación y constitución
 
-3. **Archivar este protocolo:**
-   - Renombrar este archivo `.agents/bootstrap.md` a `.agents/bootstrap.md.done` para que ningún agente lo considere tarea pendiente.
+Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas, supuestos, asuntos pendientes y trade-offs. Incluye meta, criterios finales y límites de delegación. Pide que el usuario confirme las decisiones arquitectónicas y el prompt maestro propuesto. No cierres con alcance, aceptación o autoridad críticos pendientes. Tras confirmación:
 
-4. **Transformar `README.md`:**
-   - Actualizar el título y descripción de `README.md` con el nombre, propósito y arquitectura real del nuevo proyecto.
+1. Crea `docs/adr/0002-arquitectura-base.md` usando `docs/adr/0000-template.md`. Describe problema, alternativas relevantes, stack elegido, límites, estructura adecuada a las superficies, riesgos, consecuencias y verificación. Incluye perfil base o `custom`, variantes, componentes justificados, versiones compatibles, fuentes con fecha y responsabilidades operativas. Declara los pendientes sin resolverlos por inferencia.
+2. Actualiza `.agents/project-profile.conf` con `phase=project` y los campos `application_kind`, `surfaces`, `language`, `runtime`, `framework`, `persistence` y `ci_platform`. Completa además `deployment_target` y `stack_preset` como metadatos informativos del destino y perfil elegidos; estos dos campos no agregan requisitos al gate actual. Cada valor debe reflejar una decisión o indicar `not_applicable`; no guardes secretos.
+3. Genera `specs/templates/feature.md` desde `specs/templates/feature.template.md`, añadiendo solo las secciones que corresponden al perfil y vocabulario acordados.
+4. Genera el andamiaje mínimo de la aplicación en la estructura que corresponda. Incluye pruebas de humo y los artefactos de build o configuración que haya acordado el usuario. No generes `package.json`, `tsconfig.json`, DTOs Zod, controladores HTTP ni `src/core/errors.ts` salvo que el perfil y las decisiones los requieran.
+5. Crea `scripts/verify-project.sh` ejecutable con comandos exactos del perfil y configura la CI elegida para preparar ese runtime y ejecutar `./scripts/verify.sh`. Los pasos requeridos deben propagar errores; no uses `|| true` para ocultar fallos.
+6. Si la arquitectura usa variables de entorno, documenta nombres ficticios en `.env.example` y explica la validación elegida. Nunca escribas credenciales reales.
+7. Actualiza `.gitignore` con exclusiones apropiadas al perfil, conservando las exclusiones comunes de secretos y sistema.
+8. Genera los artefactos de despliegue y el runbook acordados según el perfil: configuración de contenedores, proxy, bindings, recursos externos, migraciones y recuperación cuando apliquen. Define comandos locales reproducibles y comprobaciones remotas por separado. No crees recursos de nube ni despliegues como efecto automático de escoger un perfil.
 
-5. **Entrega y Transición:**
-   - Informar al usuario que el proyecto está formalmente inicializado con su propia identidad.
-   - Invitarlo a redactar el primer requerimiento en `specs/feat-001-<modulo>.md`.
+9. Genera `PROMPT-MAESTRO.md` desde la plantilla, sin placeholders críticos: registra la entrevista confirmada, meta y criterios con IDs, autoridad y fuente de aprobación. En ADR 0002 referencia esa delegación. No reutilices 0003 para arquitectura: está ocupado por gobernanza; los ADR posteriores usan el siguiente número libre.
+10. Crea `docs/learning.md` con el formato mínimo «fecha, spec, hallazgo, evidencia, aplicación futura» y personaliza `AGENTS.md` con estructura, comandos y límites de delegación confirmados, conservando reglas comunes. No copies allí el catálogo ni el historial. Prepara en STATE una secuencia inicial de specs vinculadas con la meta, pendientes y primer paso.
+
+## Fase 4: Sellado y transición
+
+Cuando estén creados el ADR, el perfil, la plantilla personalizada, el prompt maestro, aprendizaje, el verificador y la CI:
+
+1. Actualiza `STATE.md` con el nombre, arquitectura, estado de decisiones pendientes y resultado real del quality gate. Distingue gate semilla de gate de aplicación.
+2. Retira de `AGENTS.md` el aviso que dispara este bootstrap, conservando las reglas generales y la referencia al perfil del proyecto.
+3. Renombra `.agents/bootstrap.md` a `.agents/bootstrap.md.done`.
+4. Actualiza el README con propósito, stack y comandos reales del proyecto.
+5. Ejecuta `./scripts/verify.sh` si el entorno necesario está disponible y su instalación está autorizada. Si no, registra el gate como pendiente; no afirmes que fue superado ni declares Hito 0 completado. Conserva bootstrap archivado y las instrucciones para reanudar la inicialización pendiente desde STATE. Con salida 0 registra «Hito 0 completado; Hito 1 preparado, pendiente de invocación». Todavía no se ha verificado la entrega final.
+6. Informa qué decisiones quedaron aceptadas, qué quedó pendiente y qué comandos se ejecutaron. Aplica la política de commit confirmada al cierre de la inicialización; sin autorización no hagas commit. Entrega la instrucción de arranque: **«Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1; crea o retoma la goal de entrega definida allí y sigue el ciclo por specs de AGENTS.md»**. No inicies el desarrollo de producto hasta esa primera invocación.

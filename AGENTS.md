@@ -1,64 +1,72 @@
-# Protocolo Operativo para Agentes de Software (AGENTS.md)
+# Protocolo Operativo para Agentes de Software
 
-Este repositorio opera bajo la metodología **Spec-Driven Development (SDD)**, **Architecture Decision Records (ADR)**, **Agentic TDD** y **Quality Gates Deterministas**.
+Hito 0 proporciona un núcleo de **Spec-Driven Development (SDD)**, **Architecture Decision Records (ADR)**, **TDD** y **Quality Gates**. La arquitectura concreta se define por proyecto en `docs/adr/0002-arquitectura-base.md` y se resume en `.agents/project-profile.conf`.
 
----
+## Estado inicial: semilla Hito 0
 
-## 📌 Estado Inicial: Semilla Agnóstica (Hito 0)
+Mientras `STATE.md` indique Hito 0 y `.agents/project-profile.conf` declare `phase=seed`, cuando el usuario pida iniciar un proyecto lee y ejecuta `.agents/bootstrap.md`. Para revisar o mantener esta plantilla, no inicies la entrevista; sigue la spec de mantenimiento aplicable y crea una aprobada antes de editar si no existe.
 
-> [!IMPORTANT]
-> Si en [`STATE.md`](file://STATE.md) la fase actual es **Hito 0** (o aún no existe `docs/adr/0001-arquitectura-base.md`):
-> Cuando el usuario indique **"Inicia Hito 0"**, **"Inicia la entrevista"** o solicite comenzar un nuevo proyecto, debes **leer y ejecutar inmediatamente las instrucciones de [.agents/bootstrap.md](file://.agents/bootstrap.md)**.
-> Al finalizar la compilación del Hito 0, ejecuta el **Auto-Sellado**: retira este bloque de inicialización, archiva `bootstrap.md` y actualiza `STATE.md` para liberar contexto y enfocar el 100% de la atención en el proyecto real.
+## Reglas de gobernanza
 
----
+### 1. Fuente de contexto y decisiones
 
-## ⚖️ Reglas de Gobernanza Agéntica (Inmutables)
+1. Consulta `STATE.md`, el perfil y los ADR aplicables al inicio del trabajo.
+2. Los ADR aceptados son registros históricos inmutables. No los edites. Si una petición requiere cambiar una decisión, redacta un nuevo ADR que enlace y, cuando corresponda, reemplace el anterior; espera su aceptación antes de implementar el cambio arquitectónico. ADR 0003 permite aceptar decisiones dentro de una delegación confirmada en `PROMPT-MAESTRO.md`; fuera de ella, acepta el usuario.
+3. Distingue decisiones confirmadas, supuestos, pendientes y elementos no aplicables. No presentes una inferencia como decisión aprobada.
 
-Una vez completado el Hito 0 y compilada la arquitectura base, rigen las siguientes reglas obligatorias para cualquier agente autónomo o asistente de IA:
+### 2. SDD y Agentic TDD
 
-### 1. Jerarquía de Verdad
-1. Los documentos en `docs/adr/` son **inmutables**. Tienen precedencia sobre cualquier instrucción o prompt conversacional. Jamás propongas cambios, alteres patrones ni introduzcas dependencias que contradigan un ADR aceptado sin que el usuario cree explícitamente un nuevo ADR.
-2. Todo desarrollo comienza obligatoriamente con un archivo de especificación en `specs/*.md`. No se escribe código de producción sin un spec validado.
-3. El archivo [`STATE.md`](file://STATE.md) debe consultarse al iniciar cada sesión para conocer el estado y la tarea activa.
+1. Todo cambio de comportamiento o producción requiere una spec en `specs/*.md` con estado y criterios de aceptación verificables.
+2. Lee la spec activa y los ADR relacionados antes de diseñar o modificar.
+3. Crea primero contratos y pruebas adecuados al perfil del proyecto.
+4. Ejecuta las pruebas antes de implementar y confirma que fallan por la condición esperada; luego implementa lo mínimo y vuelve a ejecutarlas.
+5. Cada criterio de aceptación debe corresponder a una verificación observable. Elige pruebas unitarias, integración, extremo a extremo, estáticas u operativas según el cambio.
+6. Si una prueba necesita estado previo, define preparación y restauración repetibles; usa los identificadores que entrega el fixture y no datos residuales o IDs supuestos.
+7. En proyectos inicializados, vincula specs con los criterios finales del prompt maestro. Puedes autoaceptarlas solo dentro de la delegación confirmada, registrando autoridad y justificación; las que excedan el alcance requieren aprobación. Para documentación sin cambios de comportamiento usa revisión de consistencia y gate; no inventes una fase roja artificial.
 
-### 2. Ciclo de Desarrollo Obligatorio (Agentic TDD)
-1. **Lectura de contexto:** Revisa los ADR en `docs/adr/` relevantes antes de proponer cualquier diseño.
-2. **Recepción del SDD:** Lee la especificación activa en `specs/` (contrato cerrado).
-3. **Contratos antes de código:** Si no existen los esquemas de frontera (ej. Zod DTOs), créalos primero en `*.schema.ts`.
-4. **Fase Roja (Tests primero):** Escribe la suite de pruebas unitarias/integración que verifique cada uno de los Criterios de Aceptación y las invariantes. Ejecuta la prueba y confirma que falla.
-5. **Fase Verde (Implementación mínima):** Modifica **únicamente** los archivos autorizados en el bloque `Archivos editables autorizados` del spec hasta satisfacer las pruebas.
-6. **Ejecución del Quality Gate:** Corre las verificaciones automáticas hasta obtener código de salida 0.
+### 3. Límites de cambio
 
-### 3. Boundary Enforcement (Límites de Alcance)
-- **Archivos editables:** Modifica exclusivamente los archivos listados en la especificación activa.
-- **Archivos protegidos:** Queda estrictamente prohibido alterar archivos del núcleo compartido (`src/core/*`), configuraciones globales o módulos adyacentes a menos que el spec lo autorice expresamente.
-- **Control estricto de dependencias:** Prohibido instalar librerías (`npm install`, etc.) sin previa autorización explícita del usuario o justificación en un nuevo ADR.
+- Modifica solo los archivos autorizados en la spec activa.
+- Si necesitas otro archivo, actualiza primero la spec y registra el motivo antes de editarlo.
+- No alteres módulos adyacentes, configuraciones globales ni archivos protegidos sin autorización explícita en la spec.
+- No instales ni actualices dependencias sin autorización explícita o una decisión aceptada que lo permita.
 
-### 4. Manejo de Errores de Dominio Tipados
-- Queda terminantemente prohibido lanzar excepciones genéricas (`throw new Error("mensaje")`) o usar strings mágicos para identificar fallos.
-- Todo módulo debe declarar un tipo o enum con sus errores de dominio (ej. `export type [Modulo]ErrorCode = "USER_NOT_FOUND" | "INSUFFICIENT_FUNDS"`).
-- Los controladores HTTP son responsables exclusivos de capturar estos errores de dominio y traducirlos a códigos HTTP semánticos (400, 401, 403, 404, 409, 422).
+### 4. Contratos, fallos y seguridad
 
-### 5. Configuración y Secretos
-- Prohibido acceder directamente a `process.env.*` en servicios, repositorios o controladores.
-- Toda variable de entorno debe validarse mediante esquema Zod centralizado en `src/core/config.ts` y documentarse en [`.env.example`](file://.env.example).
+- Usa el mecanismo de contratos y errores definido por el stack elegido. Los códigos de error estables y el mapeo semántico al transporte aplican cuando el perfil los requiera.
+- Valida entradas en los límites de confianza definidos por la arquitectura; no confíes en restricciones de interfaz para autorizar acciones.
+- Si existen roles, tenants o ámbitos de datos, aplica denegación segura en la capa autoritativa que controla el acceso y prueba los casos permitidos, denegados y sin alcance asignado.
+- Nunca incluyas secretos reales en código, specs, logs, fixtures, documentación ni repositorio. Documenta solo nombres y valores ficticios.
+- Para integraciones externas, define cuando aplique timeout, reintentos, idempotencia, aislamiento de fallos y diagnóstico.
 
-### 6. Convención Estricta de Commits (Conventional Commits)
-Todo commit generado por el agente debe apegarse al estándar Conventional Commits:
-- `feat(<modulo>): [descripción en infinitivo]`
-- `fix(<modulo>): [descripción de corrección]`
-- `test(<modulo>): [suite o prueba añadida]`
-- `refactor(<modulo>): [cambio estructural sin alterar comportamiento]`
-- `chore(<scope>): [actualizaciones de dependencias o tooling]`
-*(Prohibidos mensajes vagos como "update code", "fix error" o "changes")*.
+### 5. Especificación de datos y estado
 
-### 7. Quality Gate Determinista
-Ninguna tarea se considera terminada si no supera los scripts de validación con código de salida 0:
-```bash
-./scripts/verify.sh
-```
-O sus comandos equivalentes:
-- Verificación estricta de tipos: `npm run typecheck`
-- Linter y formato: `npm run lint`
-- Suite de pruebas: `npm test`
+Cuando la funcionalidad maneje datos persistentes, documenta según corresponda las relaciones, invariantes, estados y transiciones, concurrencia, atomicidad, auditoría, retención, migración y reversión. Las operaciones mutantes deben verificarse mediante el estado persistido, no solo por el código de respuesta.
+
+### 6. Commits
+
+Si el usuario autoriza o solicita crear commits, sigue Conventional Commits con un tipo y descripción concretos, por ejemplo `feat: agregar exportación` o `fix(auth): rechazar sesión expirada`. La política confirmada en el prompt maestro puede autorizar un commit por spec probado. Antes de commitear revisa Git, añade solo archivos o cambios del alcance y comprueba el diff staged; no incluyas cambios ajenos ni uses `git add .` indiscriminadamente. Sin autorización, no hagas commits. El permiso de commit no concede push, merge ni despliegue.
+
+### 7. Quality Gate
+
+Toda entrega debe ejecutar `./scripts/verify.sh` y reportar el resultado. El comando delega según la fase y los comandos declarados por el perfil; no presupongas npm, un lenguaje ni una clase de pruebas determinada. Los pasos requeridos deben propagar errores y no ocultarlos con `|| true`.
+
+La semilla valida su propia estructura y contrato de fases. Un proyecto inicializado valida además los comandos definidos en `scripts/verify-project.sh`; declara por separado si sus pruebas E2E, seguridad, build u otras verificaciones forman parte del gate completo.
+
+### 8. Desarrollo y continuidad de sesión
+
+En Hito 1, al invocar `PROMPT-MAESTRO.md`, inicia o retoma la meta solicitada mediante las capacidades disponibles y registra su estado en STATE. El prompt define alcance y autoridad; AGENTS contiene reglas; ADR decisiones; specs contratos de cada cambio; STATE progreso; `docs/learning.md` aprendizaje. No dupliques esos registros.
+
+Por cada spec:
+
+1. Redacta y acepta según delegación, incluyendo rutas de la spec, STATE y aprendizaje y AGENTS si necesita ajustes. Define criterios, pruebas y vínculo con la meta.
+2. Ejecuta contratos/pruebas, implementación y gate; corrige fallos antes del cierre. No avances como si una verificación requerida hubiera pasado cuando está pendiente.
+3. Registra en la spec comandos/resultados y en `docs/learning.md` una entrada breve con spec, hallazgo, evidencia y aplicación futura. No guardes secretos ni conviertas una observación en regla arquitectónica sin ADR.
+4. Actualiza STATE con cobertura de la meta, spec actual/siguiente, pendientes, pruebas y checkpoint. Ajusta AGENTS a comandos o estructura reales solo si está autorizado; conserva gobernanza y evita añadir el historial de sesiones.
+5. Crea el commit autorizado del alcance probado, incluyendo spec y registros. Si falla o falta autorización, registra cierre pendiente. Tras éxito informa el hash; el checkpoint puede referirse al commit de la spec por su ID para evitar un segundo commit solo para registrar su propio hash.
+6. Después del commit, completa el aprendizaje con `/learn` solo si existe y es invocable con el alcance autorizado; si genera cambios de repo, revisa y commitea ese aprendizaje antes de compactar. El registro local ya satisface el aprendizaje aunque el comando no exista. No escribas memorias globales por inferencia de esta política local.
+7. Invoca `/compact` solo mediante una capacidad disponible. Si requiere acción del usuario, entrega el checkpoint y señala que debe ejecutarlo; no lo simules desde shell. Si no hay compactación, reanuda desde los archivos. Tras compactar, vuelve a leer contexto y continúa con la siguiente spec sin reiniciar la meta.
+
+Checkpoint mínimo en STATE: meta y criterios pendientes, spec terminada/activa, referencia al commit, evidencia y bloqueos, siguiente spec y primer paso. Si una goal sigue activa y la compactación es manual, registra ese punto de control; no marques la goal completa ni pausada por iniciativa propia.
+
+Solo declara la app completa cuando todos los criterios finales del prompt tienen evidencia, pasan las verificaciones integradas acordadas y están hechos los commits requeridos. Un gate verde de Hito 0 únicamente acredita la inicialización.

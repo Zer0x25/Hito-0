@@ -1,92 +1,94 @@
-# Spec: [Nombre de la Funcionalidad o Caso de Uso]
+# Spec: [Resultado o capacidad]
 
-> **Instrucción para el Agente:** Este documento es un contrato cerrado. No implementes código de producción sin antes escribir las pruebas unitarias que satisfagan estos criterios de aceptación (Agentic TDD).
+> Estado: Borrador | En revisión | Aprobada | Implementada
+> Perfil: [Nombre del perfil y ADR de arquitectura aplicables]
+> ADR relacionados: [Rutas o `Ninguno`]
+> Meta: [IDs de aceptación de PROMPT-MAESTRO.md o `Mantenimiento de semilla`]
+> Aceptación: [Quién, fecha y autoridad; si autoaceptada, referencia a la delegación y motivo de estar dentro del alcance]
 
----
+## 1. Problema, resultado y límites
 
-## 1. Alcance y Límites de Archivos
+- **Problema que se resuelve:** [Quién necesita qué y por qué]
+- **Resultado observable:** [Qué podrá comprobar un usuario u otro sistema]
+- **Incluye:** [Capacidades cubiertas]
+- **No incluye:** [Límites explícitos]
 
-- **Objetivo:** [Descripción precisa y concisa de lo que se va a implementar]
-- **Archivos editables autorizados:**
-  - `src/modules/[modulo]/[modulo].schema.ts`
-  - `src/modules/[modulo]/[modulo].service.ts`
-  - `src/modules/[modulo]/[modulo].controller.ts`
-  - `src/modules/[modulo]/[modulo].repository.ts`
-  - `tests/modules/[modulo]/[modulo].service.test.ts`
-  - `tests/modules/[modulo]/[modulo].controller.test.ts`
-- **Archivos protegidos (solo lectura / prohibido modificar):**
-  - `src/core/*`
-  - `docs/adr/*`
-  - Todo archivo fuera de `src/modules/[modulo]/` y `tests/modules/[modulo]/`
+## 2. Usuarios y flujos
 
----
+[Actores y pasos principales, estados vacíos y fallos que importan. Escribe `No aplica` cuando la capacidad no tenga usuarios o flujos propios.]
 
-## 2. Contrato Funcional de Datos (Zod Schemas)
+## 3. Contratos y datos
 
-### A. Contrato de Entrada (Input DTO)
-```typescript
-// Esquema requerido para validar la carga de entrada
-// Ej: [Entidad]InputSchema
-```
-- `campoId`: Formato y tipo (ej. `z.string().uuid()`)
-- `campoTexto`: Validaciones (ej. `z.string().trim().min(2).max(100)`)
-- `campoEnum`: Valores permitidos (ej. `z.enum(["VALOR_A", "VALOR_B"])`)
+[Entradas, salidas, eventos, formatos, validaciones y compatibilidad usando la tecnología elegida. No impongas un lenguaje o librería en esta sección.]
 
-### B. Contrato de Salida (Output DTO / Respuestas HTTP)
-```typescript
-// Esquema de respuesta segura (sin datos sensibles ni hashes)
-// Ej: [Entidad]ResponseSchema
-```
-- Salida esperada (HTTP 200/201):
-  - `id`: Identificador único generado.
-  - `status`: Estado resultante.
-  - `createdAt`: Timestamp en UTC.
-  - *(Garantía: ningún campo sensible o privado expuesto).*
+## 4. Invariantes y fallos
 
----
+### Garantías
 
-## 3. Catálogo de Errores de Dominio Tipados
-```typescript
-// Errores controlados que este módulo puede arrojar
-export type [Modulo]ErrorCode =
-  | "[MODULO]_NOT_FOUND"
-  | "[MODULO]_ALREADY_EXISTS"
-  | "INVALID_OPERATION";
-```
-- Cada error de dominio debe mapearse a un código HTTP semántico en el controlador (400, 401, 403, 404, 409).
-- Prohibido lanzar `throw new Error("mensaje")` genéricos sin código de dominio tipado.
+- [Estado o resultado que siempre debe mantenerse]
 
----
+### Casos prohibidos
 
-## 4. Invariantes del Negocio
+- [Estado o resultado que nunca debe ocurrir]
+- [Respuesta esperada ante el caso prohibido]
 
-### A. Invariantes Positivas (Garantías de Comportamiento)
-1. **[Garantía 1]:** [Ej. Toda respuesta exitosa debe devolver la entidad completa con timestamp en UTC].
-2. **[Garantía 2]:** [Ej. Las transacciones deben asegurar persistencia atómica en todas las tablas afectadas].
+## 5. Controles condicionales
 
-### B. Invariantes Negativas (Prohibiciones Duras: Lo que NUNCA debe ocurrir)
-1. **[Prohibición 1]:** [Ej. Bajo ninguna circunstancia el saldo de una cuenta puede ser menor a cero; debe rechazar y lanzar error de dominio específico].
-2. **[Prohibición 2]:** [Ej. Queda estrictamente prohibido el borrado físico de registros; solo se permiten bajas lógicas con auditoría].
-3. **[Prohibición 3]:** [Ej. Jamás persistir o exponer contraseñas o tokens en texto plano].
-4. **[Prohibición 4 - Pureza de Capas]:**
-   - El controlador jamás debe interactuar con la base de datos directamente ni contener lógica de negocio.
-   - El servicio jamás debe recibir ni manipular objetos de transporte HTTP (`Request`, `Response`).
-   - El repositorio jamás debe alterar lógica de invariantes; su única función es persistir y consultar.
+Completa solo las subsecciones que correspondan; elimina las demás antes de aprobar la spec.
 
----
+### Permisos y alcance de datos
 
-## 5. Criterios de Aceptación (Definition of Done)
+[Quién puede leer, cambiar o administrar qué. Incluye casos permitidos, denegados y sin alcance cuando existan roles o tenants.]
 
-- [ ] **Tests de Esquemas de Validación (Zod):**
-  - [ ] Rechazo de entradas incompletas o tipos erróneos con mensajes claros.
-  - [ ] Normalización correcta de datos de entrada (ej. emails a minúsculas, trims).
-- [ ] **Tests de Servicio (Vitest / Framework de pruebas):**
-  - [ ] Ejecución exitosa de flujo principal con persistencia simulada por mocks.
-  - [ ] Rechazo de operaciones duplicadas o no autorizadas arrojando el error de dominio correspondiente.
-  - [ ] Confirmación de que las **Invariantes Negativas** son validadas y rechazan estados inválidos.
-- [ ] **Higiene de Commits:**
-  - [ ] Todo commit sigue el formato Conventional Commits (`feat([modulo]): ...`, `test([modulo]): ...`).
-- [ ] **Quality Gate Determinista (Salida obligatoria: Código 0):**
-  - [ ] `npm run typecheck` (sin errores de tipos en modo estricto)
-  - [ ] `npm run lint` (sin advertencias ni errores de estilo)
-  - [ ] `npm test tests/modules/[modulo]` (100% de tests pasando)
+### Persistencia y ciclo de vida
+
+[Relaciones, estados y transiciones, atomicidad, concurrencia, retención, archivo/borrado y auditoría cuando haya datos persistentes.]
+
+### Integraciones y resiliencia
+
+[Timeouts, reintentos, idempotencia, límites de fallos y diagnóstico para dependencias externas.]
+
+### Interfaz y accesibilidad
+
+[Estados de carga, vacío y error; navegación, accesibilidad y localizadores estables para pruebas cuando exista una interfaz.]
+
+### Preparación y repetibilidad de pruebas
+
+[Fixtures aislados, preparación/restauración del estado y uso de identificadores devueltos por la preparación cuando existan pruebas de integración o E2E. No dependas de datos residuales ni IDs estáticos.]
+
+### Migración y operación
+
+[Compatibilidad, despliegue, reversión, observabilidad y operación cuando afecte un sistema desplegado.]
+
+## 6. Archivos y límites de cambio
+
+- **Editables autorizados:**
+  - `[rutas exactas o patrón acotado]`
+- **Protegidos:**
+  - `[rutas exactas o límites]`
+- Si el alcance requiere archivos adicionales, actualiza esta spec antes de modificarlos.
+
+## 7. Criterios de aceptación y pruebas
+
+Vincula cada criterio a una prueba o verificación adecuada al perfil. Cada criterio debe ser observable y tener un resultado esperado.
+
+| ID | Criterio verificable | Prueba/verificación | Resultado esperado |
+|---|---|---|---|
+| CA-1 | [Comportamiento] | [Unit, integración, E2E, seguridad, build u otra] | [Resultado] |
+
+Para mutaciones persistentes, comprueba el estado leído después de la operación. Para seguridad, cubre al menos el acceso permitido y la denegación esperada. Para interfaces, espera estados explícitos y evita aserciones que pasen si el control no aparece.
+
+## 8. Decisiones pendientes y supuestos
+
+- **Pendientes que bloquean:** [Resolver antes de implementar o registrar `Ninguno`]
+- **Supuestos aceptados para este alcance:** [Declararlos o `Ninguno`]
+- **Riesgos y trade-offs:** [Impactos que se aceptan]
+
+## 9. Quality Gate y cierre
+
+- **Comandos requeridos:** [Comandos exactos del perfil]
+- **Pruebas requeridas:** [Suites necesarias para esta spec]
+- **Cierre:** todos los criterios pasan; registra comandos, resultados y cualquier verificación pendiente en `STATE.md`.
+- **Aprendizaje:** [Hallazgo y evidencia en `docs/learning.md` para proyectos inicializados]
+- **Commit:** [Política autorizada, mensaje previsto y resultado; si es requerido y falta, cierre pendiente]
+- **Continuidad:** [Siguiente spec/paso en STATE y compactación automática, manual o no disponible]

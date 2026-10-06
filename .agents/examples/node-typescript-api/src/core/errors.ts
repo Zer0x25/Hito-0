@@ -1,9 +1,9 @@
 /**
- * Clase base abstracta para todos los errores de dominio del sistema.
+ * Ejemplo opcional para proyectos Node.js/TypeScript con API HTTP.
+ * No forma parte del núcleo agnóstico de Hito 0.
  * 
  * Garantiza que ningún servicio lance errores genéricos no tipados
- * y que la capa de transporte (HTTP controllers) pueda traducirlos
- * automáticamente a códigos de estado HTTP semánticos.
+ * y que una capa de transporte pueda traducirlos según su propio contrato.
  */
 export abstract class DomainError extends Error {
   abstract readonly code: string;
@@ -15,7 +15,7 @@ export abstract class DomainError extends Error {
     this.name = this.constructor.name;
     this.details = details;
 
-    // Mantiene el stack trace correcto en entornos V8/Node.js
+    // Mantiene el stack trace en runtimes compatibles con V8.
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Pre-commit hook: Impide confirmar cambios si el Quality Gate no pasa con código 0
-set -e
+set -euo pipefail
 
-echo "--> [Git Hook] Ejecutando Quality Gate previo al commit..."
-./scripts/verify.sh
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+printf '%s\n' '[Git Hook] Ejecutando el quality gate del perfil antes del commit.'
+exec "$ROOT_DIR/scripts/verify.sh"

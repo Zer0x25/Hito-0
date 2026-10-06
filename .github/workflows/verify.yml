@@ -1,4 +1,4 @@
-name: Quality Gate Determinista
+name: Hito 0 seed contract
 
 on:
   push:
@@ -7,32 +7,15 @@ on:
     branches: [ main ]
 
 jobs:
-  verify:
-    name: Ejecución de Quality Gate
+  verify-seed:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositorio
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
-
-      - name: Instalar dependencias (si aplica)
-        run: |
-          if [ -f "package-lock.json" ]; then
-            npm ci
-          elif [ -f "package.json" ]; then
-            npm install
-          else
-            echo "Repositorio en fase de semilla (Hito 0): omitiendo instalación de paquetes."
-          fi
-
-      - name: Permisos de ejecución para scripts
-        run: chmod +x scripts/*.sh
-
-      - name: Ejecutar Quality Gate
+      - name: Check shell syntax
+        run: bash -n scripts/verify.sh scripts/install-hooks.sh scripts/tests/verify-contract.sh .githooks/pre-commit
+      - name: Test phase-aware quality gate
+        run: bash scripts/tests/verify-contract.sh
+      - name: Verify seed structure or selected project profile
         run: ./scripts/verify.sh
