@@ -19,10 +19,12 @@ make_seed_fixture() {
     "$dir/.agents/bootstrap.md" \
     "$dir/.agents/stack-presets.md" \
     "$dir/.agents/master-prompt.template.md" \
+    "$dir/.agents/prd.template.md" \
     "$dir/docs/adr/0000-adopcion-gobernanza-agentica.md" \
     "$dir/docs/adr/0000-template.md" \
     "$dir/docs/adr/0001-perfiles-y-aplicabilidad.md" \
     "$dir/docs/adr/0003-autonomia-y-continuidad.md" \
+    "$dir/docs/adr/0004-producto-comportamiento-y-cierre.md" \
     "$dir/specs/templates/feature.template.md" \
     "$dir/.env.example" \
     "$dir/scripts/install-hooks.sh" \
@@ -36,7 +38,7 @@ make_project_manifest() {
   local dir="$1"
   printf 'phase=project\napplication_kind=web\nsurfaces=browser\nlanguage=python\nruntime=cpython\nframework=flask\npersistence=sqlite\nci_platform=github-actions\n' > "$dir/.agents/project-profile.conf"
   mkdir -p "$dir/docs/adr" "$dir/specs/templates"
-  touch "$dir/docs/adr/0002-arquitectura-base.md" "$dir/specs/templates/feature.md" "$dir/PROMPT-MAESTRO.md" "$dir/docs/learning.md"
+  touch "$dir/docs/adr/0002-arquitectura-base.md" "$dir/specs/templates/feature.md" "$dir/PROMPT-MAESTRO.md" "$dir/PRD.md" "$dir/docs/learning.md"
 }
 
 assert_status() {
@@ -99,7 +101,7 @@ VALID_SEED="$TEMP_ROOT/valid-seed"
 make_seed_fixture "$VALID_SEED"
 assert_status 0 "$VALID_SEED" "accept a complete technology-neutral seed without package.json"
 
-for required in .agents/stack-presets.md .agents/master-prompt.template.md; do
+for required in .agents/stack-presets.md .agents/master-prompt.template.md .agents/prd.template.md; do
   fixture="$TEMP_ROOT/missing-$(basename "$required")"
   make_seed_fixture "$fixture"
   rm "$fixture/$required"
@@ -122,7 +124,7 @@ chmod +x "$PROJECT/scripts/verify-project.sh"
 assert_status 0 "$PROJECT" "dispatch project verification from the explicit phase without package.json"
 assert_output_contains "$PROJECT" "PROJECT_GATE_REACHED" "run the profile-specific verifier"
 
-for required in PROMPT-MAESTRO.md docs/learning.md; do
+for required in PROMPT-MAESTRO.md docs/learning.md PRD.md; do
   fixture="$TEMP_ROOT/missing-project-$(basename "$required")"
   make_seed_fixture "$fixture"
   make_project_manifest "$fixture"
@@ -131,6 +133,13 @@ for required in PROMPT-MAESTRO.md docs/learning.md; do
   rm "$fixture/$required"
   assert_failure_contains "$fixture" "$required" "reject project without $required"
 done
+
+FAILED_PROJECT="$TEMP_ROOT/failed-project-gate"
+make_seed_fixture "$FAILED_PROJECT"
+make_project_manifest "$FAILED_PROJECT"
+printf '#!/usr/bin/env bash\nexit 7\n' > "$FAILED_PROJECT/scripts/verify-project.sh"
+chmod +x "$FAILED_PROJECT/scripts/verify-project.sh"
+assert_status 7 "$FAILED_PROJECT" "propagate the project verifier failure without declaring success"
 
 MISSING_PROJECT_GATE="$TEMP_ROOT/missing-project-gate"
 make_seed_fixture "$MISSING_PROJECT_GATE"

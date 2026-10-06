@@ -7,7 +7,7 @@ Actúas como facilitador de arquitectura. Hito 0 define el propósito y las regl
 1. Pregunta como máximo dos cosas por turno y usa lenguaje claro.
 2. Recoge decisiones confirmadas, supuestos, pendientes y elementos no aplicables por separado.
 3. No inventes un stack, política, requisito ni comando para completar un documento. Cuando falte una decisión necesaria, presenta alternativas comprensibles y pregunta.
-4. Consulta `STATE.md`, `AGENTS.md`, ADR 0000, ADR 0001 y ADR 0003 antes de editar.
+4. Consulta `STATE.md`, `AGENTS.md`, ADR 0000, ADR 0001, ADR 0003 y ADR 0004 antes de editar.
 5. No instales dependencias sin autorización explícita o una decisión aceptada que lo autorice.
 6. Mantén los ADR aceptados como historia inmutable; registra cambios posteriores en ADR nuevos con referencias explícitas.
 
@@ -38,7 +38,7 @@ Define una primera entrega finita: capacidades incluidas, exclusiones, flujos co
 
 Acuerda la delegación conforme a ADR 0003: autoaceptación de specs dentro del alcance, decisiones técnicas que puede aceptar en ADR nuevos, autorización acotada de dependencias, commit por spec probado y política de aprendizaje/compactación. Presenta como flujo recomendado specs autónomas dentro de límites, commit local por spec y continuidad entre specs; registra la respuesta confirmada. No conviertas permiso de commit en permiso de push, merge o despliegue. Las decisiones materiales fuera de la delegación se consultan.
 
-Usa `.agents/master-prompt.template.md` para preparar el resumen de alcance y aceptación final. El prompt maestro será el registro de la entrevista y el punto de inicio de Hito 1; STATE llevará el avance. Comprueba las capacidades de goal, `/learn` y `/compact` del entorno; si no existen o son manuales, registra la alternativa documental. No generes comandos ficticios.
+Usa `.agents/prd.template.md` para preparar un PRD breve con requisitos identificados y evidencia final; confirma ejemplos de comportamiento críticos y calidad aplicable, sin inventar negocio. Acuerda la DoD del perfil referenciando AGENTS y un umbral positivo de intentos sin progreso (referencia: tres), sin confundirlo con el número total de iteraciones de desarrollo. Usa `.agents/master-prompt.template.md` para invocación y delegación, referenciando el PRD sin duplicar su alcance. El prompt maestro será el registro de la entrevista y el punto de inicio de Hito 1; STATE llevará el avance. Comprueba las capacidades de goal, `/learn` y `/compact` del entorno; si no existen o son manuales, registra la alternativa documental. No generes comandos ficticios.
 
 ### Selección guiada del stack
 
@@ -60,9 +60,9 @@ No trates esta lista como formulario obligatorio. Marca lo irrelevante como `no_
 
 ## Fase 3: Confirmación y constitución
 
-Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas, supuestos, asuntos pendientes y trade-offs. Incluye meta, criterios finales y límites de delegación. Pide que el usuario confirme las decisiones arquitectónicas y el prompt maestro propuesto. No cierres con alcance, aceptación o autoridad críticos pendientes. Tras confirmación:
+Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas, supuestos, asuntos pendientes y trade-offs. Incluye meta, criterios finales y límites de delegación. Confirma primero el PRD propuesto, la DoD y el umbral de falta de progreso; luego pide confirmar las decisiones arquitectónicas y la delegación del prompt maestro. Mantén hasta dos preguntas por turno. No cierres con alcance, aceptación o autoridad críticos pendientes. Tras confirmación:
 
-1. Crea `docs/adr/0002-arquitectura-base.md` usando `docs/adr/0000-template.md`. Describe problema, alternativas relevantes, stack elegido, límites, estructura adecuada a las superficies, riesgos, consecuencias y verificación. Incluye perfil base o `custom`, variantes, componentes justificados, versiones compatibles, fuentes con fecha y responsabilidades operativas. Declara los pendientes sin resolverlos por inferencia.
+1. Guarda `PRD.md` aprobado desde su plantilla, incluyendo fuente de confirmación, requisitos de entrega y exclusiones. Crea `docs/adr/0002-arquitectura-base.md` usando `docs/adr/0000-template.md`. Describe problema, alternativas relevantes, stack elegido, límites, estructura adecuada a las superficies, riesgos, consecuencias y verificación. Incluye perfil base o `custom`, variantes, componentes justificados, versiones compatibles, fuentes con fecha y responsabilidades operativas. Declara los pendientes sin resolverlos por inferencia.
 2. Actualiza `.agents/project-profile.conf` con `phase=project` y los campos `application_kind`, `surfaces`, `language`, `runtime`, `framework`, `persistence` y `ci_platform`. Completa además `deployment_target` y `stack_preset` como metadatos informativos del destino y perfil elegidos; estos dos campos no agregan requisitos al gate actual. Cada valor debe reflejar una decisión o indicar `not_applicable`; no guardes secretos.
 3. Genera `specs/templates/feature.md` desde `specs/templates/feature.template.md`, añadiendo solo las secciones que corresponden al perfil y vocabulario acordados.
 4. Genera el andamiaje mínimo de la aplicación en la estructura que corresponda. Incluye pruebas de humo y los artefactos de build o configuración que haya acordado el usuario. No generes `package.json`, `tsconfig.json`, DTOs Zod, controladores HTTP ni `src/core/errors.ts` salvo que el perfil y las decisiones los requieran.
@@ -71,14 +71,14 @@ Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas,
 7. Actualiza `.gitignore` con exclusiones apropiadas al perfil, conservando las exclusiones comunes de secretos y sistema.
 8. Genera los artefactos de despliegue y el runbook acordados según el perfil: configuración de contenedores, proxy, bindings, recursos externos, migraciones y recuperación cuando apliquen. Define comandos locales reproducibles y comprobaciones remotas por separado. No crees recursos de nube ni despliegues como efecto automático de escoger un perfil.
 
-9. Genera `PROMPT-MAESTRO.md` desde la plantilla, sin placeholders críticos: registra la entrevista confirmada, meta y criterios con IDs, autoridad y fuente de aprobación. En ADR 0002 referencia esa delegación. No reutilices 0003 para arquitectura: está ocupado por gobernanza; los ADR posteriores usan el siguiente número libre.
-10. Crea `docs/learning.md` con el formato mínimo «fecha, spec, hallazgo, evidencia, aplicación futura» y personaliza `AGENTS.md` con estructura, comandos y límites de delegación confirmados, conservando reglas comunes. No copies allí el catálogo ni el historial. Prepara en STATE una secuencia inicial de specs vinculadas con la meta, pendientes y primer paso.
+9. Genera `PROMPT-MAESTRO.md` desde la plantilla, sin placeholders críticos: registra la entrevista confirmada, referencia al PRD aprobado, autoridad, umbral de falta de progreso y fuente de aprobación. En ADR 0002 referencia esa delegación. No reutilices 0003 o 0004 para arquitectura: están ocupados por gobernanza; los ADR posteriores usan el siguiente número libre (inicialmente 0005).
+10. Crea `docs/learning.md` con el formato mínimo «fecha, spec, hallazgo, evidencia, aplicación futura» y personaliza `AGENTS.md` con estructura, comandos, DoD del perfil y límites de delegación confirmados, conservando reglas comunes. No copies allí el catálogo ni el historial. Prepara en STATE una secuencia inicial de specs vinculadas con la meta, pendientes y primer paso.
 
 ## Fase 4: Sellado y transición
 
-Cuando estén creados el ADR, el perfil, la plantilla personalizada, el prompt maestro, aprendizaje, el verificador y la CI:
+Cuando estén creados el PRD, el ADR, el perfil, la plantilla personalizada, el prompt maestro, aprendizaje, el verificador y la CI:
 
-1. Actualiza `STATE.md` con el nombre, arquitectura, estado de decisiones pendientes y resultado real del quality gate. Distingue gate semilla de gate de aplicación.
+1. Actualiza `STATE.md` con el nombre, arquitectura, cobertura de requisitos del PRD, estado de decisiones pendientes y resultado real del quality gate. Incluye problema activo, contador de intentos sin progreso y siguiente hipótesis si hay fallos. Distingue gate semilla de gate de aplicación.
 2. Retira de `AGENTS.md` el aviso que dispara este bootstrap, conservando las reglas generales y la referencia al perfil del proyecto.
 3. Renombra `.agents/bootstrap.md` a `.agents/bootstrap.md.done`.
 4. Actualiza el README con propósito, stack y comandos reales del proyecto.

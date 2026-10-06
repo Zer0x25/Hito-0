@@ -19,13 +19,15 @@ Luego se genera la arquitectura del proyecto en `docs/adr/0002-arquitectura-base
 
 ### Del Hito 0 a una app completa
 
-La entrevista también confirma una meta de primera entrega, alcance, exclusiones, criterios finales y autonomía. Genera **`PROMPT-MAESTRO.md`** como registro de inicio desde [su plantilla](.agents/master-prompt.template.md), personaliza AGENTS y prepara STATE y `docs/learning.md`. El sellado archiva el bootstrap y deja Hito 1 preparado cuando pasa el gate de inicialización.
+La entrevista confirma un **PRD breve** con alcance, exclusiones, requisitos y aceptación final, junto con DoD y autonomía. Genera `PRD.md` desde [su plantilla](.agents/prd.template.md) y **`PROMPT-MAESTRO.md`** desde [la plantilla de inicio](.agents/master-prompt.template.md). El prompt referencia el PRD; AGENTS contiene reglas y DoD; STATE registra cobertura y avance. El sellado archiva el bootstrap y deja Hito 1 preparado cuando pasa el gate de inicialización.
 
 Para iniciar la primera interacción de desarrollo, escribe:
 
 > Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1; crea o retoma la goal de entrega definida allí y sigue el ciclo por specs de AGENTS.md.
 
-El agente divide la meta en specs, las acepta dentro de la delegación confirmada y avanza con contratos, pruebas, implementación y gate. Por spec registra aprendizaje y estado, crea el commit autorizado y prepara la compactación antes de continuar. Los ADR nuevos recogen decisiones significativas; los cambios fuera de la delegación se consultan. La app solo queda completa con evidencia de todos los criterios finales y commits requeridos.
+El agente divide los requisitos del PRD en specs SDD con escenarios BDD pertinentes (Dado/Cuando/Entonces), los acepta dentro de la delegación y usa pruebas antes de implementar. Cucumber no es obligatorio. Cada spec cierra al cumplir aceptación y DoD, con aprendizaje, estado y commit autorizado; luego se prepara la compactación acordada. La app cierra con evidencia de todo el PRD y flujos integrados.
+
+Para evitar repetición improductiva, cada intento sobre un fallo tiene hipótesis y evidencia. La entrevista confirma un umbral positivo de intentos sin progreso (referencia: tres); al alcanzarlo se conserva el checkpoint y se solicita una intervención concreta. Compactar no reinicia el contador. El agente no amplía el alcance ni reduce pruebas o DoD para terminar. Los ADR registran decisiones significativas; las mejoras opcionales quedan para una entrega futura.
 
 La continuidad se apoya en archivos del repo. `/learn` se usa si el entorno lo ofrece y su alcance está autorizado; no se presupone un comando universal. `/compact` depende de la interfaz: si es manual, el agente entrega un checkpoint para ejecutarlo. Sin herramientas de goals o compactación, STATE permite retomar la meta. Referencias de capacidades, consultadas el 2026-10-06: [comandos de Codex](https://learn.chatgpt.com/docs/developer-commands?surface=cli) y [goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex).
 
@@ -46,7 +48,9 @@ En el bloque de persistencia la entrevista siempre presenta **SQLite y PostgreSQ
 
 ## Principios que entrega la semilla
 
-- **SDD:** una spec con alcance y criterios observables antes de implementar.
+- **PRD:** fuente única del alcance y aceptación del producto.
+- **SDD + BDD:** specs acotadas con ejemplos de comportamiento vinculados a pruebas.
+- **DoD:** condiciones comunes de calidad y cierre adaptadas al perfil.
 - **ADRs append-only:** las decisiones aceptadas se conservan; los cambios se registran en ADR nuevos enlazados.
 - **TDD apropiado al proyecto:** el tipo de prueba corresponde a la arquitectura y a los criterios de aceptación.
 - **Límites de alcance:** la spec declara archivos editables y protegidos.
@@ -59,7 +63,8 @@ En el bloque de persistencia la entrevista siempre presenta **SQLite y PostgreSQ
 ├── .agents/
 │   ├── bootstrap.md                         # Entrevista y generación por perfil
 │   ├── stack-presets.md                     # Referencias VPS, Cloudflare, Cloud Run y custom
-│   ├── master-prompt.template.md             # Meta, delegación e inicio de Hito 1
+│   ├── master-prompt.template.md             # Invocación y delegación de Hito 1
+│   ├── prd.template.md                       # Alcance y aceptación final
 │   ├── project-profile.conf                 # Fase y metadatos no secretos
 │   └── examples/node-typescript-api/        # Ejemplo opcional de un perfil
 ├── .github/workflows/verify.yml             # Comprueba contrato de la semilla
@@ -68,7 +73,8 @@ En el bloque de persistencia la entrevista siempre presenta **SQLite y PostgreSQ
 │   ├── 0000-adopcion-gobernanza-agentica.md # Constitución de gobernanza
 │   ├── 0000-template.md                     # Formato ADR
 │   ├── 0001-perfiles-y-aplicabilidad.md     # Alcance neutral y perfiles
-│   └── 0003-autonomia-y-continuidad.md      # Delegación; 0002 reservado para producto
+│   ├── 0003-autonomia-y-continuidad.md      # Delegación; 0002 reservado para producto
+│   └── 0004-producto-comportamiento-y-cierre.md # PRD, BDD, DoD y progreso
 ├── specs/
 │   ├── seed-*.md                            # Specs y evidencia de mantenimiento
 │   └── templates/feature.template.md        # Base SDD adaptable
@@ -86,7 +92,7 @@ El ADR 0001 explica qué es común y qué depende del perfil. El ADR 0002 se res
 ## Trabajo posterior
 
 1. Tras invocar el prompt maestro, crea una spec desde `specs/templates/feature.md`, la plantilla personalizada del proyecto; `feature.template.md` es la base de la semilla.
-2. Declara el objetivo, límites, decisiones aplicables, invariantes y criterios que se puedan comprobar.
+2. Vincula requisitos del PRD, contratos, escenarios pertinentes, archivos autorizados y pruebas; referencia la DoD común sin copiarla.
 3. Ejecuta pruebas primero, implementa dentro del alcance autorizado y corre `./scripts/verify.sh`.
 4. Registra resultados y aprendizaje, crea el commit autorizado y prepara el checkpoint para compactar y seguir con la siguiente spec, según AGENTS.
 
@@ -96,6 +102,6 @@ Las specs pueden añadir secciones de permisos, contratos de API, persistencia, 
 
 En el repositorio semilla, `./scripts/verify.sh` comprueba la presencia de los documentos base. GitHub Actions además prueba el comportamiento del despachador en fases `seed` y `project`.
 
-Después de inicializar una aplicación, el bootstrap genera `scripts/verify-project.sh` y adapta la CI para preparar el runtime elegido. El gate raíz exige el manifiesto, el ADR de arquitectura, la plantilla personalizada, el prompt maestro, el registro de aprendizaje y el verificador del proyecto. E2E, seguridad, build y verificaciones operacionales se declaran en el perfil según corresponda.
+Después de inicializar una aplicación, el bootstrap genera `scripts/verify-project.sh` y adapta la CI para preparar el runtime elegido. El gate raíz exige el manifiesto, el ADR de arquitectura, la plantilla personalizada, el PRD, el prompt maestro, el registro de aprendizaje y el verificador del proyecto. E2E, seguridad, build y verificaciones operacionales se declaran en el perfil según corresponda.
 
 El hook local se activa por clon con `./scripts/install-hooks.sh`; la CI sigue siendo la verificación compartida del repositorio.

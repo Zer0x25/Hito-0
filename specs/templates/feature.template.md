@@ -1,94 +1,57 @@
-# Spec: [Resultado o capacidad]
+# Spec: [Resultado verificable]
 
-> Estado: Borrador | En revisión | Aprobada | Implementada
-> Perfil: [Nombre del perfil y ADR de arquitectura aplicables]
-> ADR relacionados: [Rutas o `Ninguno`]
-> Meta: [IDs de aceptación de PROMPT-MAESTRO.md o `Mantenimiento de semilla`]
-> Aceptación: [Quién, fecha y autoridad; si autoaceptada, referencia a la delegación y motivo de estar dentro del alcance]
+> Estado: Borrador | Aprobada | Implementada | Cerrada
+> Requisitos: [IDs de PRD.md o mantenimiento de semilla]
+> ADR aplicables: [Rutas o ninguno]
+> Aceptación: [Quién, fecha y autoridad; delegación y justificación si autoaceptada]
 
-## 1. Problema, resultado y límites
+## 1. Objetivo y alcance
 
-- **Problema que se resuelve:** [Quién necesita qué y por qué]
-- **Resultado observable:** [Qué podrá comprobar un usuario u otro sistema]
-- **Incluye:** [Capacidades cubiertas]
-- **No incluye:** [Límites explícitos]
+- **Resultado observable:** [Problema y capacidad que se entrega]
+- **Incluye / excluye:** [Límites concretos]
+- **Pendientes críticos / supuestos aceptados:** [Resolver los críticos antes de implementar]
 
-## 2. Usuarios y flujos
+## 2. Contratos e invariantes
 
-[Actores y pasos principales, estados vacíos y fallos que importan. Escribe `No aplica` cuando la capacidad no tenga usuarios o flujos propios.]
+[Entradas, salidas, datos y validaciones conforme al stack aceptado. Garantías, estados prohibidos y respuesta esperada.]
 
-## 3. Contratos y datos
+Añade solo controles pertinentes: permisos y alcance de datos; estados, atomicidad y concurrencia; integraciones y resiliencia; interfaz y accesibilidad; fixtures y restauración; migración, reversión y operación. No repitas decisiones del ADR ni rellenes secciones irrelevantes.
 
-[Entradas, salidas, eventos, formatos, validaciones y compatibilidad usando la tecnología elegida. No impongas un lenguaje o librería en esta sección.]
+## 3. Comportamientos BDD y aceptación
 
-## 4. Invariantes y fallos
+Documenta ejemplos de negocio relevantes con Dado/Cuando/Entonces, incluyendo alternativas y rechazos según el riesgo. No generes un escenario por cada detalle técnico ni exijas una librería BDD. Consulta ambigüedades críticas al usuario antes de autoaceptar.
 
-### Garantías
+```gherkin
+Escenario BDD-1: [Comportamiento del requisito REQ-1]
+  Dado [Estado inicial reproducible]
+  Cuando [Acción]
+  Entonces [Resultado observable]
+  Y [Invariante que se conserva, si aplica]
+```
 
-- [Estado o resultado que siempre debe mantenerse]
+| ID | Requisito PRD | Escenario / criterio | Prueba o verificación | Resultado esperado |
+|---|---|---|---|---|
+| CA-1 | REQ-1 | BDD-1 | [Prueba adecuada a la capa] | [Resultado concreto] |
 
-### Casos prohibidos
+Para cambios técnicos sin comportamiento de usuario, elimina el ejemplo Gherkin y usa criterios técnicos verificables. No copies los mismos escenarios a PRD y prompt. En mutaciones comprueba datos persistidos; en permisos cubre autorización y rechazo; en UI espera estados explícitos y evita pruebas que pasen si falta el control.
 
-- [Estado o resultado que nunca debe ocurrir]
-- [Respuesta esperada ante el caso prohibido]
+## 4. Archivos autorizados
 
-## 5. Controles condicionales
+- **Editables:** [Rutas exactas o patrón acotado; incluir spec, STATE y aprendizaje si se actualizan]
+- **Protegidos:** [Rutas o límites]
 
-Completa solo las subsecciones que correspondan; elimina las demás antes de aprobar la spec.
+Actualiza la spec antes de ampliar archivos; no cambia por sí misma arquitectura ni permisos de dependencias.
 
-### Permisos y alcance de datos
+## 5. Verificación y DoD
 
-[Quién puede leer, cambiar o administrar qué. Incluye casos permitidos, denegados y sin alcance cuando existan roles o tenants.]
+- **DoD común:** AGENTS.md; añade aquí únicamente condiciones propias.
+- **Comandos y suites:** [Exactos; TDD para comportamiento, revisión y gate para documentación]
+- **Condiciones adicionales:** [Controles específicos o ninguno]
 
-### Persistencia y ciclo de vida
+## 6. Cierre y continuidad
 
-[Relaciones, estados y transiciones, atomicidad, concurrencia, retención, archivo/borrado y auditoría cuando haya datos persistentes.]
-
-### Integraciones y resiliencia
-
-[Timeouts, reintentos, idempotencia, límites de fallos y diagnóstico para dependencias externas.]
-
-### Interfaz y accesibilidad
-
-[Estados de carga, vacío y error; navegación, accesibilidad y localizadores estables para pruebas cuando exista una interfaz.]
-
-### Preparación y repetibilidad de pruebas
-
-[Fixtures aislados, preparación/restauración del estado y uso de identificadores devueltos por la preparación cuando existan pruebas de integración o E2E. No dependas de datos residuales ni IDs estáticos.]
-
-### Migración y operación
-
-[Compatibilidad, despliegue, reversión, observabilidad y operación cuando afecte un sistema desplegado.]
-
-## 6. Archivos y límites de cambio
-
-- **Editables autorizados:**
-  - `[rutas exactas o patrón acotado]`
-- **Protegidos:**
-  - `[rutas exactas o límites]`
-- Si el alcance requiere archivos adicionales, actualiza esta spec antes de modificarlos.
-
-## 7. Criterios de aceptación y pruebas
-
-Vincula cada criterio a una prueba o verificación adecuada al perfil. Cada criterio debe ser observable y tener un resultado esperado.
-
-| ID | Criterio verificable | Prueba/verificación | Resultado esperado |
-|---|---|---|---|
-| CA-1 | [Comportamiento] | [Unit, integración, E2E, seguridad, build u otra] | [Resultado] |
-
-Para mutaciones persistentes, comprueba el estado leído después de la operación. Para seguridad, cubre al menos el acceso permitido y la denegación esperada. Para interfaces, espera estados explícitos y evita aserciones que pasen si el control no aparece.
-
-## 8. Decisiones pendientes y supuestos
-
-- **Pendientes que bloquean:** [Resolver antes de implementar o registrar `Ninguno`]
-- **Supuestos aceptados para este alcance:** [Declararlos o `Ninguno`]
-- **Riesgos y trade-offs:** [Impactos que se aceptan]
-
-## 9. Quality Gate y cierre
-
-- **Comandos requeridos:** [Comandos exactos del perfil]
-- **Pruebas requeridas:** [Suites necesarias para esta spec]
-- **Cierre:** todos los criterios pasan; registra comandos, resultados y cualquier verificación pendiente en `STATE.md`.
-- **Aprendizaje:** [Hallazgo y evidencia en `docs/learning.md` para proyectos inicializados]
-- **Commit:** [Política autorizada, mensaje previsto y resultado; si es requerido y falta, cierre pendiente]
-- **Continuidad:** [Siguiente spec/paso en STATE y compactación automática, manual o no disponible]
+- **Evidencia:** [Criterios, comandos y resultados reales; verificaciones requeridas pendientes impiden cierre]
+- **Aprendizaje:** [Hallazgo con evidencia en docs/learning.md o sin hallazgos nuevos; semilla puede registrarlo aquí]
+- **Commit:** [Política, mensaje y resultado; requerido pendiente impide cierre]
+- **Checkpoint en STATE:** [Cobertura del PRD, siguiente paso y bloqueos con contador/hipótesis si existen]
+- **Compactación:** [Según política confirmada y capacidades disponibles; no reiniciar la meta ni contador por compactar]
