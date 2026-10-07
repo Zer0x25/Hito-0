@@ -6,8 +6,8 @@ Este archivo es el tablero de trabajo de la plantilla. `Hito 0` describe el esta
 
 - **Estado:** Semilla lista para inicializar proyectos; este repositorio sigue siendo el molde maestro.
 - **Perfil:** `phase=seed` (sin stack ni dominio de aplicación seleccionados).
-- **Especificación de mantenimiento:** [`specs/seed-006-perfil-offline-first.md`](specs/seed-006-perfil-offline-first.md) — implementada y verificada documentalmente. Seeds 001–005 completadas.
-- **Última verificación completada:** Seed 006: escenarios y enlaces revisados documentalmente, gate semilla y whitespace (salida 0); original preservado por hash. El protocolo offline es propuesto, sin implementación probada. Seed 005 conserva evidencia del contrato 16/16.
+- **Especificación de mantenimiento:** [`specs/seed-007-gobernanza-por-niveles.md`](specs/seed-007-gobernanza-por-niveles.md) — Tier 1 implementada y verificada documentalmente; entrega en el commit de Seed 007. Seeds 001–006 implementadas; Seed 006 está en `295fd18`.
+- **Última verificación completada:** Seed 007: 14 escenarios revisados documentalmente, enlaces/formato/alcance correctos, ADR previos intactos, gate semilla y whitespace (salida 0). Sin pruebas de comportamiento de agente/app. Seed 006 mantiene su perfil offline propuesto, sin protocolo implementado; Seed 005 conserva evidencia previa del contrato 16/16.
 
 ## Registro de hitos
 
@@ -15,6 +15,7 @@ Este archivo es el tablero de trabajo de la plantilla. `Hito 0` describe el esta
 - [x] **Hito 0: Núcleo neutral y perfiles** — desacople de stack, entrevista adaptativa, plantillas condicionales, perfil explícito y gate por fase. Verificación estructural superada; todavía no existe una aplicación inicializada en este repositorio.
 - [x] **Hito 0: Recomendaciones por despliegue** — catálogo opcional VPS, Cloudflare, Cloud Run y personalizado; selección y generación según requisitos y confirmación en entrevista.
 - [x] **Hito 0: Producto, comportamiento y cierre** — PRD como fuente de alcance, BDD dentro de specs, DoD común y política de falta de progreso.
+- [x] **Hito 0: Gobernanza por niveles** — registro ligero Tier 3, spec breve Tier 2 y controles Tier 1 según riesgo; entrevista, prompt y continuidad adaptados, con revisión documental.
 - [ ] **Hito 0 de una aplicación derivada:** pendiente. Se inicia en un repositorio creado desde esta plantilla con `Inicia Hito 0`.
 - [ ] **Hito 1:** primera spec de producto en el repositorio derivado.
 
@@ -28,11 +29,14 @@ Este archivo es el tablero de trabajo de la plantilla. `Hito 0` describe el esta
 | 2026-10-06 | Codex | Añadió oferta de SQLite y PostgreSQL según alcance en entrevista | Cuatro escenarios revisados documentalmente; gate semilla y whitespace: salida 0 |
 | 2026-10-06 | Codex | Integró PRD, BDD, DoD y detección de repetición improductiva | Contrato 16/16; gate, sintaxis y formato: salida 0 |
 | 2026-10-07 | Codex | Incorporó perfil offline-first opcional con contratos corregidos | Revisión documental, gate y formato: salida 0; sin app ni protocolo ejecutado |
+| 2026-10-07 | Codex | Integró gobernanza por niveles y registro ligero, ADR 0005 | 14 escenarios revisados documentalmente; enlaces/alcance/ADR correctos; gate y formato: salida 0 |
 
 ## Checkpoint del molde
 
-- **Meta de mantenimiento:** incorporar referencia offline-first opcional y corregida; evidencia en Seed 006.
-- **Estado Git de Seed 006:** cambios locales sin commit/push. Las releases existentes conservan sus commits. Última entrega publicada previa: Seed 005 (`1bea0d4`).
-- **Siguiente paso:** crear un repositorio derivado e iniciar Hito 0. La entrevista generará el prompt de esa app; no existe una goal de producto en el molde.
-- **Continuidad:** aprendizaje de mantenimiento en Seed 006; `/learn` y `/compact` no ejecutados en esta sesión. El usuario puede compactar después del cierre y retomar desde estos archivos.
+- **Meta de mantenimiento:** integrar gobernanza proporcional al riesgo; criterios CA-1–CA-7 en Seed 007.
+- **Unidad terminada:** Seed 007, Tier 1; criterios CA-1–CA-7 verificados documentalmente y gate estructural superado. No hay unidad activa ni goal de producto.
+- **Entrega Git:** commit y push autorizados el 2026-10-07 por «commit and push». Referencia: commit de Seed 007 (`feat(seed): integrar gobernanza proporcional al riesgo`), que incluye este checkpoint; hash y confirmación remota se informan al concluir la operación. Antes de publicar, HEAD estaba en Seed 006 (`295fd18`) y `origin/main` en Seed 005 (`1bea0d4`); el push publica ambos avances. Releases sin cambios.
+- **Siguiente paso:** al reanudar, comprobar si el commit de Seed 007 ya está en el remoto; si falta, completar la entrega Git autorizada. Con publicación confirmada, crear un repositorio derivado e iniciar Hito 0 para confirmar niveles, autoridad y comandos reales. No repetir implementación ni aprendizaje de Seed 007; ante un fallo Git, conservar el checkpoint y resolver solo esa entrega.
+- **Falta de progreso:** sin bloqueo activo; contador 0.
+- **Continuidad:** aprendizaje de mantenimiento en Seed 007; `/learn` y `/compact` no ejecutados en esta sesión. Retomar desde este checkpoint si hace falta.
 - **Pendiente de evidencia:** una app derivada que complete entrevista, sellado y desarrollo; las pruebas del despachador no sustituyen esa validación.

@@ -14,10 +14,14 @@ Entregar la primera versión definida en `PRD.md`, cumpliendo sus requisitos y e
 ## Delegación confirmada
 
 - **Specs:** [Autoaceptación dentro del alcance / aprobación humana]
+- **Niveles:** Clasificar por riesgo según AGENTS y ADR 0005. [Quién puede clasificar/aceptar Tier 2/1 y límites; ante incertidumbre conservar mayores controles].
+- **Tier 3:** [Registro ligero en STATE autorizado y quién lo acepta / usar spec]. Correcciones de contrato confirmado; sin ampliar alcance ni modificar specs cerradas.
 - **ADR técnicos:** [Decisiones que puede aceptar el agente y límites / aprobación humana]
 - **Dependencias:** [Autorización específica, categorías acotadas o ninguna]
-- **Commits:** [Commit por spec probado autorizado / confirmación por commit]
-- **Continuidad:** [Compactar entre specs; automática cuando invocable, manual con checkpoint]
+- **Commits de specs:** [Por spec verificada autorizado / confirmación por commit / no requerido para esta entrega]
+- **Commits de registros ligeros:** [Por registro verificado autorizado / confirmación por commit / no requerido para esta entrega]. No inferir del permiso de commit por spec.
+- **Verificación:** Consultar comandos y controles en AGENTS. [Chequeo rápido de iteración autorizado con su cobertura / ninguno]; el cierre de todos los niveles conserva el gate raíz y DoD.
+- **Continuidad:** [Compactar por necesidad de contexto / entre unidades según preferencia; automática cuando invocable, manual con checkpoint]. No repetir por cada ajuste ligero sin necesidad.
 - **Falta de progreso:** [Umbral positivo confirmado de intentos consecutivos sin progreso sobre el mismo problema; referencia: 3]. Seguir AGENTS, conservar el contador en STATE y solicitar la intervención concreta al alcanzarlo.
 - **Aprendizaje:** `docs/learning.md`; [uso adicional de /learn solo si existe y su alcance está autorizado].
 - **Requiere consulta:** cambios de alcance, stack, seguridad, costos o compromisos fuera de los límites anteriores. Push, merge y despliegue requieren su propia autorización.
@@ -26,9 +30,9 @@ Entregar la primera versión definida en `PRD.md`, cumpliendo sus requisitos y e
 
 Al pedirme «Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1», crea o retoma una goal cuyo objetivo sea esta meta, si el entorno lo admite. No reemplaces una goal activa diferente; consulta el conflicto. Si no hay herramienta de goals, lleva la meta y sus pendientes en STATE y declara esa modalidad. No inventes un presupuesto de tokens o tiempo.
 
-Lee PRD, AGENTS, STATE, el perfil y los ADR aplicables. Comprueba el estado real de Git y del gate. Si la inicialización está pendiente, resuélvela antes de desarrollar producto. Descompón la meta en specs pequeñas y ordenadas por dependencias; vincula cada una con los IDs del PRD, escenarios BDD pertinentes y pruebas. Mantén una spec activa por unidad de trabajo; reanúdala antes de crear otra.
+Lee PRD, AGENTS, STATE, el perfil y los ADR aplicables. Comprueba el estado real de Git y del gate. Si la inicialización está pendiente, resuélvela antes de desarrollar producto. Descompón la meta en unidades pequeñas ordenadas por dependencias y clasifícalas antes de editar: specs para Tier 2/1, registro ligero para Tier 3 cuando esté autorizado. Vincula requisitos o correcciones justificadas, criterios y verificaciones pertinentes. Mantén una unidad activa; reanúdala antes de crear otra.
 
-Sigue el ciclo de AGENTS: spec aceptada → contratos y pruebas → implementación → verificación → aprendizaje y estado → commit autorizado → checkpoint → compactación → siguiente spec. Genera o actualiza instrucciones de proyecto cuando cambien los comandos o estructura bajo una decisión autorizada. No repitas aquí reglas de stack: consulta ADR 0002.
+Sigue el ciclo de AGENTS: clasificación y registro aceptado → contratos/pruebas o revisión pertinente → implementación → gate y controles DoD → aprendizaje y estado → commit cuando requerido y autorizado → checkpoint → compactación según necesidad/política → siguiente unidad. Genera o actualiza instrucciones de proyecto cuando cambien los comandos o estructura bajo una decisión autorizada. Consulta ADR 0002 para stack y AGENTS para niveles; no dupliques esas reglas aquí.
 
 ## Cierre de meta
 
@@ -36,4 +40,4 @@ Antes de declarar la app completa, verifica todos los requisitos y evidencias fi
 
 ## Reanudación
 
-Después de compactar o cambiar de sesión, consulta STATE, la spec activa, los ADR aplicables y el aprendizaje relevante. Verifica Git y los artefactos; usa el checkpoint para continuar sin repetir tareas concluidas. Las modificaciones posteriores al alcance de este prompt requieren aprobación y una referencia a la nueva decisión.
+Después de compactar o cambiar de sesión, consulta STATE, la spec o registro ligero activo, los ADR aplicables y el aprendizaje relevante. Verifica Git y los artefactos; usa el checkpoint para continuar sin repetir tareas concluidas. Reclasificar no reinicia el contador de falta de progreso. Las modificaciones posteriores al alcance de este prompt requieren aprobación y una referencia a la nueva decisión.

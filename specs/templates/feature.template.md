@@ -1,9 +1,12 @@
 # Spec: [Resultado verificable]
 
 > Estado: Borrador | Aprobada | Implementada | Cerrada
+> Nivel: Tier 2 — Estándar | Tier 1 — Riesgo alto | Tier 3 con spec si no se autoriza registro ligero; justificación: [efecto, contrato y riesgo]
 > Requisitos: [IDs de PRD.md o mantenimiento de semilla]
 > ADR aplicables: [Rutas o ninguno]
 > Aceptación: [Quién, fecha y autoridad; delegación y justificación si autoaceptada]
+
+Usa esta plantilla para Tier 2/1 según AGENTS y ADR 0005, o como alternativa si no se autoriza el registro ligero. En Tier 2 conserva secciones breves y pertinentes; Tier 1 detalla invariantes, riesgos y verificación. Tier 3 puede usar el registro ligero en STATE si está autorizado; no necesita generar esta spec. Un cambio de decisión significativa requiere además ADR, no sustituir la spec por él. No crees ni actualices PRD por cada tarea.
 
 ## 1. Objetivo y alcance
 
@@ -19,7 +22,7 @@ Añade solo controles pertinentes: permisos y alcance de datos; estados, atomici
 
 ## 3. Comportamientos BDD y aceptación
 
-Documenta ejemplos de negocio relevantes con Dado/Cuando/Entonces, incluyendo alternativas y rechazos según el riesgo. No generes un escenario por cada detalle técnico ni exijas una librería BDD. Consulta ambigüedades críticas al usuario antes de autoaceptar.
+Documenta ejemplos de negocio relevantes con Dado/Cuando/Entonces, incluyendo alternativas y rechazos según el riesgo. Pueden expresarse en nombres/comentarios de tests si los referencias por ruta/ID en la tabla y sus aserciones comprueban los resultados; no copies su texto completo aquí. No generes un escenario por cada detalle técnico ni exijas una librería BDD. Consulta ambigüedades críticas al usuario antes de autoaceptar.
 
 ```gherkin
 Escenario BDD-1: [Comportamiento del requisito REQ-1]
@@ -45,7 +48,8 @@ Actualiza la spec antes de ampliar archivos; no cambia por sí misma arquitectur
 ## 5. Verificación y DoD
 
 - **DoD común:** AGENTS.md; añade aquí únicamente condiciones propias.
-- **Comandos y suites:** [Exactos; TDD para comportamiento, revisión y gate para documentación]
+- **Comandos y suites de cierre:** [Exactos; `./scripts/verify.sh` y controles obligatorios de la DoD; TDD para comportamiento, revisión pertinente para documentación/presentación]
+- **Chequeo rápido de iteración:** [Comando y cobertura confirmados / ninguno; no sustituye el cierre]
 - **Condiciones adicionales:** [Controles específicos o ninguno]
 
 ## 6. Cierre y continuidad

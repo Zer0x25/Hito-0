@@ -19,13 +19,27 @@ Luego se genera la arquitectura del proyecto en `docs/adr/0002-arquitectura-base
 
 ### Del Hito 0 a una app completa
 
-La entrevista confirma un **PRD breve** con alcance, exclusiones, requisitos y aceptación final, junto con DoD y autonomía. Genera `PRD.md` desde [su plantilla](.agents/prd.template.md) y **`PROMPT-MAESTRO.md`** desde [la plantilla de inicio](.agents/master-prompt.template.md). El prompt referencia el PRD; AGENTS contiene reglas y DoD; STATE registra cobertura y avance. El sellado archiva el bootstrap y deja Hito 1 preparado cuando pasa el gate de inicialización.
+La entrevista confirma un **PRD breve** con alcance, exclusiones, requisitos y aceptación final, junto con DoD, autonomía por nivel, permisos de commits y continuidad. Genera `PRD.md` desde [su plantilla](.agents/prd.template.md) y **`PROMPT-MAESTRO.md`** desde [la plantilla de inicio](.agents/master-prompt.template.md). El prompt referencia el PRD; AGENTS contiene reglas y DoD; STATE registra cobertura y avance. El sellado archiva el bootstrap y deja Hito 1 preparado cuando pasa el gate de inicialización.
 
 Para iniciar la primera interacción de desarrollo, escribe:
 
-> Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1; crea o retoma la goal de entrega definida allí y sigue el ciclo por specs de AGENTS.md.
+> Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1; crea o retoma la goal de entrega definida allí y sigue el ciclo por unidades de AGENTS.md.
 
-El agente divide los requisitos del PRD en specs SDD con escenarios BDD pertinentes (Dado/Cuando/Entonces), los acepta dentro de la delegación y usa pruebas antes de implementar. Cucumber no es obligatorio. Cada spec cierra al cumplir aceptación y DoD, con aprendizaje, estado y commit autorizado; luego se prepara la compactación acordada. La app cierra con evidencia de todo el PRD y flujos integrados.
+El agente divide los requisitos del PRD en unidades según riesgo. Las specs SDD incluyen o referencian escenarios BDD pertinentes (Dado/Cuando/Entonces) comprobados por pruebas; Cucumber no es obligatorio. Cada unidad cierra al cumplir aceptación y DoD, con aprendizaje útil, estado y commits requeridos/autorizados. La compactación se acuerda por necesidad de contexto o entre unidades. La app cierra con evidencia de todo el PRD y flujos integrados.
+
+### Tres niveles de trabajo
+
+La fuente operativa es [AGENTS, sección 2](AGENTS.md#2-sdd-y-agentic-tdd); la decisión está en [ADR 0005](docs/adr/0005-gobernanza-proporcional-al-riesgo.md).
+
+| Nivel | Uso | Documento de trabajo |
+|---|---|---|
+| **Tier 3 — Ligero** | Corrección acotada de comportamiento confirmado o presentación, sin riesgos de Tier 1. | Registro breve identificado en STATE, si se autoriza; sin spec nueva. |
+| **Tier 2 — Estándar** | Funcionalidad dentro del PRD y arquitectura aprobados. | Spec breve con contrato aplicable y pruebas. |
+| **Tier 1 — Riesgo alto** | Arquitectura, permisos, pagos, concurrencia, migraciones delicadas o integraciones externas. | Spec detallada; ADR adicional si cambia una decisión significativa. |
+
+El riesgo determina el nivel: un bugfix pequeño puede ser Tier 1. Todos conservan alcance autorizado, verificación, DoD y checkpoint. El chequeo rápido opcional sirve para iterar; el cierre usa el gate raíz y controles acordados. No se exige un stack, carpeta de DTOs o runner de tests específico. PRD solo cambia ante cambios confirmados de alcance o aceptación.
+
+Los proyectos derivados existentes deben confirmar la adopción y ajustar sus instrucciones; esta política no amplía una delegación previa ni extiende automáticamente permisos de commit por spec a registros ligeros.
 
 Para evitar repetición improductiva, cada intento sobre un fallo tiene hipótesis y evidencia. La entrevista confirma un umbral positivo de intentos sin progreso (referencia: tres); al alcanzarlo se conserva el checkpoint y se solicita una intervención concreta. Compactar no reinicia el contador. El agente no amplía el alcance ni reduce pruebas o DoD para terminar. Los ADR registran decisiones significativas; las mejoras opcionales quedan para una entrega futura.
 
@@ -59,7 +73,8 @@ Incluye contratos de publicación transaccional, idempotencia, ediciones pendien
 - **DoD:** condiciones comunes de calidad y cierre adaptadas al perfil.
 - **ADRs append-only:** las decisiones aceptadas se conservan; los cambios se registran en ADR nuevos enlazados.
 - **TDD apropiado al proyecto:** el tipo de prueba corresponde a la arquitectura y a los criterios de aceptación.
-- **Límites de alcance:** la spec declara archivos editables y protegidos.
+- **Gobernanza por riesgo:** registro ligero o spec según nivel, con autoridad y evidencia.
+- **Límites de alcance:** la spec o registro ligero declara archivos editables y protegidos.
 - **Verificación reproducible:** `./scripts/verify.sh` valida la semilla o delega al verificador generado para el perfil.
 - **Seguridad de datos:** no guardar secretos reales en el repositorio y validar entradas en las fronteras de confianza que defina la arquitectura.
 
@@ -80,7 +95,8 @@ Incluye contratos de publicación transaccional, idempotencia, ediciones pendien
 │   ├── 0000-template.md                     # Formato ADR
 │   ├── 0001-perfiles-y-aplicabilidad.md     # Alcance neutral y perfiles
 │   ├── 0003-autonomia-y-continuidad.md      # Delegación; 0002 reservado para producto
-│   └── 0004-producto-comportamiento-y-cierre.md # PRD, BDD, DoD y progreso
+│   ├── 0004-producto-comportamiento-y-cierre.md # PRD, BDD, DoD y progreso
+│   └── 0005-gobernanza-proporcional-al-riesgo.md # Niveles y registro ligero
 ├── docs/architecture-profiles/
 │   └── full-stack-offline-first.md            # Referencia opcional y propuesta
 ├── specs/
@@ -99,10 +115,10 @@ El ADR 0001 explica qué es común y qué depende del perfil. El ADR 0002 se res
 
 ## Trabajo posterior
 
-1. Tras invocar el prompt maestro, crea una spec desde `specs/templates/feature.md`, la plantilla personalizada del proyecto; `feature.template.md` es la base de la semilla.
-2. Vincula requisitos del PRD, contratos, escenarios pertinentes, archivos autorizados y pruebas; referencia la DoD común sin copiarla.
-3. Ejecuta pruebas primero, implementa dentro del alcance autorizado y corre `./scripts/verify.sh`.
-4. Registra resultados y aprendizaje, crea el commit autorizado y prepara el checkpoint para compactar y seguir con la siguiente spec, según AGENTS.
+1. Tras invocar el prompt maestro, clasifica y justifica la unidad. Tier 3 usa un registro en STATE si se autoriza; Tier 2/1 crean spec desde `specs/templates/feature.md`, personalizada desde `feature.template.md`.
+2. Vincula requisitos o corrección confirmada, criterios, contratos/escenarios pertinentes, archivos autorizados y verificaciones; referencia la DoD común sin copiarla.
+3. Para comportamiento ejecuta pruebas primero; para documentación/presentación usa revisión pertinente. Implementa dentro del alcance autorizado y corre `./scripts/verify.sh` con los controles de cierre acordados.
+4. Registra resultados y aprendizaje útil, crea el commit cuando requerido y autorizado y prepara el checkpoint para seguir con la siguiente unidad; compacta según necesidad y política confirmada.
 
 Las specs pueden añadir secciones de permisos, contratos de API, persistencia, ciclo de vida, integraciones, interfaz, migraciones u operación cuando correspondan. No marques secciones irrelevantes como requisitos obligatorios.
 
