@@ -46,6 +46,12 @@ Cloudflare incluye la variante Pages. SSR, API sin interfaz, procesos batch y eq
 
 En el bloque de persistencia la entrevista siempre presenta **SQLite y PostgreSQL**, recomienda según concurrencia de escrituras, instancias, consultas y operación, y confirma la elección. Si no hacen falta datos duraderos, registra persistencia como no aplicable. La viabilidad de cada opción se evalúa en el destino elegido.
 
+## Referencia especializada: full stack offline-first
+
+El [perfil opcional offline-first](docs/architecture-profiles/full-stack-offline-first.md) propone React/Dexie, Fastify y PostgreSQL para apps que capturan trabajo sin red y sincronizan varios dispositivos. Complementa los perfiles de despliegue cuando el PRD lo justifica; no convierte PostgreSQL, SSE, TanStack Query, un monorepo o el dominio de asistencia en requisitos universales.
+
+Incluye contratos de publicación transaccional, idempotencia, ediciones pendientes, recuperación, permisos y validación. Estado **propuesto, pendiente de implementación y pruebas**: las comprobaciones de esta semilla no certifican el protocolo. Para solo lectura offline o una app siempre conectada, considera una arquitectura más simple.
+
 ## Principios que entrega la semilla
 
 - **PRD:** fuente única del alcance y aceptación del producto.
@@ -75,6 +81,8 @@ En el bloque de persistencia la entrevista siempre presenta **SQLite y PostgreSQ
 │   ├── 0001-perfiles-y-aplicabilidad.md     # Alcance neutral y perfiles
 │   ├── 0003-autonomia-y-continuidad.md      # Delegación; 0002 reservado para producto
 │   └── 0004-producto-comportamiento-y-cierre.md # PRD, BDD, DoD y progreso
+├── docs/architecture-profiles/
+│   └── full-stack-offline-first.md            # Referencia opcional y propuesta
 ├── specs/
 │   ├── seed-*.md                            # Specs y evidencia de mantenimiento
 │   └── templates/feature.template.md        # Base SDD adaptable

@@ -52,6 +52,8 @@ Registra provisionalmente perfil base, variantes, componentes incluidos y descar
 
 ### Elección de base de datos
 
+Cuando el PRD requiera escritura offline y sincronización entre dispositivos, consulta `docs/architecture-profiles/full-stack-offline-first.md` como perfil opcional propuesto. Pregunta duración máxima offline y operaciones permitidas, luego pérdida local admisible y conflictos relevantes, conservando hasta dos preguntas por turno. Si solo se necesita lectura offline, considera caché antes de proponer un motor completo. Confirma selección y compatibilidad con el despliegue; registra variantes y garantías pendientes de pruebas en ADR 0002 y specs. No copies el modelo de asistencia ni generes un monorepo por defecto.
+
 En el bloque de persistencia presenta siempre **SQLite y PostgreSQL**, con una explicación breve y una recomendación según el alcance real de la app. Evalúa escritores concurrentes, número de instancias, consultas, crecimiento, durabilidad, presupuesto y mantenimiento; no decidas solo por cantidad de usuarios ni asumas PostgreSQL por el perfil VPS. Sigue la comparación y las condiciones de despliegue en `.agents/stack-presets.md`.
 
 Mantén hasta dos preguntas por turno. Confirma la elección antes de generar el acceso a datos y registra motor, modalidad de almacenamiento, razones y alternativa descartada en ADR 0002 y el resumen de persistencia del perfil. Si la app no requiere datos duraderos, explica ambas opciones brevemente y registra persistencia como `not_applicable`, sin añadir una base por defecto.

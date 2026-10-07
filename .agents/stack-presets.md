@@ -93,6 +93,12 @@ Fuentes: [criterios de elección de SQLite](https://www.sqlite.org/whentouse.htm
 
 **Fuentes:** [contrato de contenedor](https://docs.cloud.google.com/run/docs/container-contract), [conexión a Cloud SQL](https://docs.cloud.google.com/sql/docs/postgres/connect-run).
 
+## Perfil adicional: operación offline y sincronización
+
+Si el PRD exige capturar cambios sin conexión y reconciliar varios dispositivos, consulta el [perfil full stack offline-first](../docs/architecture-profiles/full-stack-offline-first.md) (`offline-first-postgres`). Es una referencia propuesta, pendiente de validación: no es arquitectura aceptada ni base automática para toda PWA. Si basta lectura offline, evalúa caché; si la app es siempre conectada, omite el motor.
+
+Este perfil complementa el destino elegido; sus componentes deben ser compatibles con ese runtime. Presenta siempre SQLite y PostgreSQL: PostgreSQL central es una decisión del perfil, y otro motor exige una variante explícita y pruebas propias. SSE, TanStack Query, monorepo y ejemplos de asistencia son opcionales o ilustrativos. En ADR 0002 registra la selección, variantes, duración offline, pérdida local admisible, ámbito, conflictos y garantías a probar; no añadas un campo obligatorio al manifiesto por esta referencia.
+
 ## Registro y generación
 
 Tras confirmación del usuario, ADR 0002 debe incluir perfil base y variantes, motivos, alternativa descartada, dependencias/componentes seleccionados, fuentes con fecha, restricciones operativas y verificaciones exactas. Define contratos y errores conforme al stack aceptado. El catálogo permanece como referencia; no sustituyas decisiones posteriores del proyecto por sus recomendaciones.
