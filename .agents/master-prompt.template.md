@@ -2,6 +2,8 @@
 
 > Generar como `PROMPT-MAESTRO.md` después de confirmar la entrevista. Resolver los campos críticos antes de aceptarlo; no usar esta plantilla sin personalizar.
 
+> HITO0_PENDING: retirar este marcador solo después de confirmar alcance y autoridad.
+
 - **Estado:** [Aceptado por el usuario, fecha y referencia de confirmación]
 - **Arquitectura:** `docs/adr/0002-arquitectura-base.md`
 - **Producto y aceptación:** `PRD.md` [Referencia a la versión/confirmación vigente]
@@ -14,21 +16,21 @@ Entregar la primera versión definida en `PRD.md`, cumpliendo sus requisitos y e
 ## Delegación confirmada
 
 - **Specs:** [Autoaceptación dentro del alcance / aprobación humana]
-- **Niveles:** Clasificar por riesgo según AGENTS y ADR 0005. [Quién puede clasificar/aceptar Tier 2/1 y límites; ante incertidumbre conservar mayores controles].
+- **Niveles:** Clasificar por riesgo según AGENTS y ADR 0005/0006. [Quién puede clasificar/aceptar Tier 2/1 y límites; ante incertidumbre conservar mayores controles].
 - **Tier 3:** [Registro ligero en STATE autorizado y quién lo acepta / usar spec]. Correcciones de contrato confirmado; sin ampliar alcance ni modificar specs cerradas.
 - **ADR técnicos:** [Decisiones que puede aceptar el agente y límites / aprobación humana]
 - **Dependencias:** [Autorización específica, categorías acotadas o ninguna]
-- **Commits de specs:** [Por spec verificada autorizado / confirmación por commit / no requerido para esta entrega]
-- **Commits de registros ligeros:** [Por registro verificado autorizado / confirmación por commit / no requerido para esta entrega]. No inferir del permiso de commit por spec.
+- **Commits:** [Por unidad verificada: alcance y niveles autorizados, incluyendo expresamente specs y registros ligeros / confirmación por commit / no requerido]. No extender permisos antiguos limitados a una modalidad.
+- **Revisión Tier 1:** [Modalidad, responsable y riesgos que requieren revisión humana/separada o pruebas adversarias; no llamar independiente a revisión propia].
 - **Verificación:** Consultar comandos y controles en AGENTS. [Chequeo rápido de iteración autorizado con su cobertura / ninguno]; el cierre de todos los niveles conserva el gate raíz y DoD.
-- **Continuidad:** [Compactar por necesidad de contexto / entre unidades según preferencia; automática cuando invocable, manual con checkpoint]. No repetir por cada ajuste ligero sin necesidad.
+- **Continuidad:** STATE y unidad activa; capacidades opcionales según `docs/agent-capabilities.md`. [Preferencia adicional si existe].
 - **Falta de progreso:** [Umbral positivo confirmado de intentos consecutivos sin progreso sobre el mismo problema; referencia: 3]. Seguir AGENTS, conservar el contador en STATE y solicitar la intervención concreta al alcanzarlo.
-- **Aprendizaje:** `docs/learning.md`; [uso adicional de /learn solo si existe y su alcance está autorizado].
+- **Aprendizaje:** hallazgos útiles en `docs/learning.md`; sin trámite adicional por unidad.
 - **Requiere consulta:** cambios de alcance, stack, seguridad, costos o compromisos fuera de los límites anteriores. Push, merge y despliegue requieren su propia autorización.
 
 ## Invocación de inicio
 
-Al pedirme «Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1», crea o retoma una goal cuyo objetivo sea esta meta, si el entorno lo admite. No reemplaces una goal activa diferente; consulta el conflicto. Si no hay herramienta de goals, lleva la meta y sus pendientes en STATE y declara esa modalidad. No inventes un presupuesto de tokens o tiempo.
+Al pedirme «Lee y ejecuta PROMPT-MAESTRO.md para iniciar Hito 1», crea o retoma la meta con las capacidades disponibles según `docs/agent-capabilities.md`; STATE conserva objetivo y pendientes.
 
 Lee PRD, AGENTS, STATE, el perfil y los ADR aplicables. Comprueba el estado real de Git y del gate. Si la inicialización está pendiente, resuélvela antes de desarrollar producto. Descompón la meta en unidades pequeñas ordenadas por dependencias y clasifícalas antes de editar: specs para Tier 2/1, registro ligero para Tier 3 cuando esté autorizado. Vincula requisitos o correcciones justificadas, criterios y verificaciones pertinentes. Mantén una unidad activa; reanúdala antes de crear otra.
 

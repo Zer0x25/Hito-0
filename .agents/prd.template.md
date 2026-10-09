@@ -2,6 +2,8 @@
 
 > Estado: Borrador | Aprobado. Registrar fecha y confirmación del usuario. Este archivo será `PRD.md`, fuente del alcance de producto; no duplicarlo en el prompt maestro.
 
+> HITO0_PENDING: retirar este marcador solo después de resolver y confirmar los campos críticos.
+
 ## Problema y resultado
 
 [Quién tiene qué problema y qué resultado observable necesita.]

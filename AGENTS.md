@@ -4,7 +4,7 @@ Hito 0 proporciona un núcleo de **Spec-Driven Development (SDD)**, **Architectu
 
 ## Estado inicial: semilla Hito 0
 
-Mientras `STATE.md` indique Hito 0 y `.agents/project-profile.conf` declare `phase=seed`, cuando el usuario pida iniciar un proyecto lee y ejecuta `.agents/bootstrap.md`. Para revisar o mantener esta plantilla, no inicies la entrevista; sigue la unidad de mantenimiento aprobada según su nivel. Usa una spec salvo que la política confirmada autorice un registro ligero para una corrección Tier 3.
+Cuando el usuario pida iniciar un proyecto con `phase=seed`, lee `.agents/bootstrap.md`. Con `phase=initializing`, retoma el paso pendiente desde STATE y el bootstrap, preservando decisiones y archivos existentes; no reinicies la entrevista. Para revisar o mantener esta plantilla, no inicies la entrevista; sigue la unidad de mantenimiento aprobada según su nivel. Usa una spec salvo que la política confirmada autorice un registro ligero para una corrección Tier 3.
 
 ## Reglas de gobernanza
 
@@ -13,6 +13,8 @@ Mientras `STATE.md` indique Hito 0 y `.agents/project-profile.conf` declare `pha
 1. Consulta `STATE.md`, el perfil y los ADR aplicables al inicio del trabajo.
 2. Los ADR aceptados son registros históricos inmutables. No los edites. Si una petición requiere cambiar una decisión, redacta un nuevo ADR que enlace y, cuando corresponda, reemplace el anterior; espera su aceptación antes de implementar el cambio arquitectónico. ADR 0003 permite aceptar decisiones dentro de una delegación confirmada en `PROMPT-MAESTRO.md`; fuera de ella, acepta el usuario.
 3. Distingue decisiones confirmadas, supuestos, pendientes y elementos no aplicables. No presentes una inferencia como decisión aprobada.
+4. ADR 0006 aclara la precedencia: los documentos del repo no están por encima de las instrucciones del anfitrión ni de nuevas instrucciones explícitas del usuario. Registra cambios autorizados de decisión antes de implementarlos; conserva los ADR históricos. Una contradicción material sin resolver requiere consulta.
+5. Auditoría, lectura y diagnóstico sin cambios persistentes no requieren spec. Para un experimento temporal declara objetivo, límites, verificación y limpieza; no instala dependencias ni afecta servicios sin autoridad. Implementar sus resultados requiere la unidad correspondiente.
 
 ### 2. SDD y Agentic TDD
 
@@ -29,8 +31,8 @@ Mientras `STATE.md` indique Hito 0 y `.agents/project-profile.conf` declare `pha
 | Nivel | Aplicación | Registro y controles propios |
 |---|---|---|
 | **Tier 3 — Ligero** | Corrección acotada que restaura comportamiento confirmado; textos, presentación o refactor interno sin cambiar contrato ni introducir riesgos de Tier 1. | Registro breve en STATE vinculado a la fuente vigente; regresión cuando cambia código de comportamiento, o comprobación visual/documental pertinente. Sin spec ni ADR nuevos. |
-| **Tier 2 — Estándar** | Funcionalidad dentro del PRD y arquitectura aprobados, como endpoint, componente o filtro sin riesgos de Tier 1. | Spec breve, contrato cuando aplique y escenarios BDD vinculados a pruebas del resultado, alternativas y rechazos pertinentes. |
-| **Tier 1 — Riesgo alto** | Arquitectura, seguridad/permisos, pagos, concurrencia, migraciones delicadas o integraciones externas, incluidos bugfixes en esos ámbitos. | Spec detallada con invariantes, riesgos y controles de integración, datos, seguridad u operación aplicables. ADR nuevo solo si introduce o cambia una decisión significativa. |
+| **Tier 2 — Estándar** | Funcionalidad dentro del PRD y arquitectura aprobados, como endpoint, componente, filtro o integración sin riesgos de Tier 1. | Spec breve, contrato cuando aplique y escenarios BDD vinculados a pruebas del resultado, alternativas y rechazos pertinentes. |
+| **Tier 1 — Riesgo alto** | Arquitectura, seguridad/permisos, pagos, concurrencia, migraciones delicadas y cambios a controles de gobernanza. Integraciones con datos sensibles, credenciales, costos o efectos difíciles de revertir; incluidos bugfixes en esos ámbitos. | Spec detallada con invariantes, riesgos y controles de integración, datos, seguridad u operación aplicables. ADR nuevo solo si introduce o cambia una decisión significativa. |
 
 El número de líneas, la palabra «bugfix» o «corrección de tests» no determinan el nivel. Justifica la clasificación antes de editar; ante incertidumbre usa el nivel de mayor control pertinente y consulta ambigüedades críticas. Si aparecen riesgos o cambios de contrato, actualiza el registro y escala a spec antes de continuar; conserva el ID anterior como referencia. Cambiar de nivel no amplía autoridad ni reinicia el contador de falta de progreso.
 
@@ -41,17 +43,13 @@ Spec y ADR cumplen funciones distintas: el ADR no sustituye contratos y verifica
 Con modalidad y autoridad confirmadas, crea antes de editar un bloque en STATE; no hace falta otro archivo. Referencia la spec/contrato existente o la instrucción del usuario que confirma el resultado. No modifiques una spec cerrada para alojar la corrección. Si el comportamiento esperado no está claro, usa spec y consulta lo crítico; los tests existentes no resuelven por sí solos una ambigüedad de negocio.
 
 ```text
-LIG-001 — [Descripción] — Tier 3: [justificación] — [aprobado/en curso/terminado]
-Autoridad: [quién, fecha y petición o delegación confirmada]
-Fuente vigente: [spec, contrato o instrucción confirmada; requisito PRD si aplica]
-Problema y criterio: [observado → resultado esperado verificable]
-Rutas autorizadas: [código, pruebas, STATE y aprendizaje si se modifica]; protegidas: [límites]
-Verificación prevista: [regresión/revisión pertinente, gate y controles DoD]
-Cierre: [evidencia real, aprendizaje o sin hallazgos, commit autorizado/pendiente/no requerido]
-Siguiente paso: [acción o ninguna; contador y bloqueo si existen]
+LIG-001 — [Descripción] — Tier 3: [justificación] — [estado]
+Resultado/fuente: [problema → criterio; spec/contrato/instrucción vigente y requisito si aplica]
+Alcance/autoridad: [rutas y límites; quién, fecha y petición/delegación]
+Verificación/cierre: [verificación prevista → evidencia real, aprendizaje si útil, commit/local; siguiente paso y contador/bloqueo si existen]
 ```
 
-Al terminar, conserva el registro y su evidencia. Otro defecto usa otro ID; no sobrescribas un cierre previo. Todas las unidades mantienen límites, DoD, gate y checkpoint. La autorización para registros ligeros y commits de esos registros se confirma por separado; no se deduce de una autorización de commit por spec.
+Al terminar, conserva el registro y su evidencia. Otro defecto usa otro ID; no sobrescribas un cierre previo. Todas las unidades mantienen límites, DoD, gate y checkpoint. La delegación puede incluir ambas modalidades por alcance y riesgo. No extiendas una autorización antigua limitada a specs; el registro ligero requiere modalidad y autoridad confirmadas.
 
 ### 3. Límites de cambio
 
@@ -59,6 +57,8 @@ Al terminar, conserva el registro y su evidencia. Otro defecto usa otro ID; no s
 - Si necesitas otro archivo, actualiza primero la spec o registro y registra el motivo antes de editarlo.
 - No alteres módulos adyacentes, configuraciones globales ni archivos protegidos sin autorización explícita en la unidad aprobada.
 - No instales ni actualices dependencias sin autorización explícita o una decisión aceptada que lo permita.
+- Cambiar permisos, lógica del gate, CI de cierre o criterios de aceptación es Tier 1 cuando altera controles. Incluye esas rutas y la decisión en la unidad autorizada; no uses la autoaceptación para reducir controles. Una corrección de redacción que preserva la regla se clasifica por su efecto real.
+- En Tier 1 acuerda revisión adicional según el riesgo: humana o separada para seguridad, datos y efectos irreversibles; pruebas adversarias para controles deterministas. Registra modalidad, responsable y evidencia en la spec. No presentes revisión propia como independiente; si la revisión acordada falta, el cierre queda pendiente.
 
 ### 4. Contratos, fallos y seguridad
 
@@ -74,13 +74,13 @@ Cuando la funcionalidad maneje datos persistentes, documenta según corresponda 
 
 ### 6. Commits
 
-Si el usuario autoriza o solicita crear commits, sigue Conventional Commits con un tipo y descripción concretos, por ejemplo `feat: agregar exportación` o `fix(auth): rechazar sesión expirada`. La política confirmada en el prompt maestro puede autorizar commits por spec y, por separado, por registro ligero verificado. Antes de commitear revisa Git, añade solo archivos o cambios del alcance y comprueba el diff staged; no incluyas cambios ajenos ni uses `git add .` indiscriminadamente. Sin autorización, no hagas commits. El permiso de commit no concede push, merge ni despliegue.
+Si el usuario autoriza o solicita crear commits, sigue Conventional Commits con un tipo y descripción concretos, por ejemplo `feat: agregar exportación` o `fix(auth): rechazar sesión expirada`. La política confirmada en el prompt maestro puede autorizar commits de unidades verificadas por alcance y riesgo, incluyendo expresamente specs y registros ligeros en una misma autorización. Antes de commitear revisa Git, añade solo archivos o cambios del alcance y comprueba el diff staged; no incluyas cambios ajenos ni uses `git add .` indiscriminadamente. Sin autorización, no hagas commits. El permiso de commit no concede push, merge ni despliegue.
 
 ### 7. Quality Gate
 
 Toda entrega debe ejecutar `./scripts/verify.sh` y reportar el resultado. El comando delega según la fase y los comandos declarados por el perfil; no presupongas npm, un lenguaje ni una clase de pruebas determinada. Los pasos requeridos deben propagar errores y no ocultarlos con `|| true`.
 
-La semilla valida su propia estructura y contrato de fases. Un proyecto inicializado valida además los comandos definidos en `scripts/verify-project.sh`; declara por separado si sus pruebas E2E, seguridad, build u otras verificaciones forman parte del gate completo.
+El gate raíz ejecuta integridad documental, sintaxis Bash y contrato de fases; en semilla añade el piloto temporal. En `initializing` y `project` ejecuta además `scripts/verify-project.sh`. La fase `initializing` no declara sellado; `scripts/verify-structure.sh` es interno y no sustituye el cierre. La CI invoca el mismo gate; declara por separado si sus pruebas E2E, seguridad, build u otras verificaciones forman parte del gate completo.
 
 Un chequeo rápido opcional, confirmado con comandos y cobertura reales del perfil, sirve para iterar. Su resultado no sustituye el gate raíz ni los controles obligatorios de la DoD al cerrar cualquier nivel. El agente no omite suites ni reduce el gate por reclasificar una tarea.
 
@@ -95,10 +95,11 @@ Por cada unidad (spec o registro ligero Tier 3 autorizado):
 3. Registra comandos/resultados en la spec o cierre ligero y en `docs/learning.md` una entrada breve con ID de unidad, hallazgo, evidencia y aplicación futura si existe un aprendizaje útil; si no, registra «sin hallazgos nuevos» en el cierre, sin inventarlos. En mantenimiento de semilla el aprendizaje puede quedar en la spec. No guardes secretos ni conviertas una observación en regla arquitectónica sin ADR.
 4. Actualiza STATE con cobertura de la meta, unidad actual/siguiente, pendientes, pruebas y checkpoint. En Tier 3 el mismo bloque puede servir de registro y checkpoint, sin duplicarlo. Ajusta AGENTS a comandos o estructura reales solo si está autorizado; conserva gobernanza y evita añadir el historial de sesiones.
 5. Crea el commit del alcance verificado cuando la política confirmada lo requiera y autorice, incluyendo spec si aplica y registros. Si un commit requerido falla o falta su autorización, registra cierre pendiente; si no es requerido, registra los cambios locales sin afirmar que fueron commiteados. Tras éxito informa el hash; el checkpoint puede referirse al commit de la unidad por su ID para evitar un segundo commit solo para registrar su propio hash.
-6. Después del commit, completa el aprendizaje con `/learn` solo si existe y es invocable con el alcance autorizado; si genera cambios de repo, revisa y commitea ese aprendizaje antes de compactar. El registro local ya satisface el aprendizaje aunque el comando no exista. No escribas memorias globales por inferencia de esta política local.
-7. Compacta según la política confirmada: por necesidad de contexto o entre unidades si así se acordó; no es un paso obligatorio tras cada ajuste ligero. Invoca `/compact` solo mediante una capacidad disponible. Si requiere acción del usuario, entrega el checkpoint y señala que debe ejecutarlo; no lo simules desde shell. Si no hay compactación, reanuda desde los archivos. Tras compactar, vuelve a leer contexto y continúa con la siguiente unidad sin reiniciar la meta.
+6. Conserva un checkpoint antes de cambiar de sesión o compactar y reanuda desde los archivos. Las capacidades opcionales del anfitrión están en `docs/agent-capabilities.md`; no son pasos obligatorios por unidad ni autorizan memorias globales.
 
 Checkpoint mínimo en STATE: meta y criterios pendientes, unidad terminada/activa con ID y nivel, referencia al commit o estado local, evidencia y bloqueos, siguiente unidad y primer paso. Si una goal sigue activa y la compactación es manual, registra ese punto de control; no marques la goal completa ni pausada por iniciativa propia.
+
+STATE conserva meta, unidad activa, bloqueos y cierres recientes. Al superar diez cierres, mueve los anteriores íntegros a `docs/history/` y enlázalos, preservando IDs y evidencia. Nunca archives contadores activos ni autorizaciones aún necesarias.
 
 Solo declara la app completa cuando cumple aceptación final del PRD y DoD. Un gate verde de Hito 0 únicamente acredita la inicialización.
 

@@ -1,181 +1,158 @@
 #!/usr/bin/env bash
-set -uo pipefail
-
+set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TEMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TEMP_ROOT"' EXIT
-
 PASS_COUNT=0
 FAIL_COUNT=0
 
 make_seed_fixture() {
-  local dir="$1"
+  local dir="$1" file
   mkdir -p "$dir/.agents" "$dir/docs/adr" "$dir/specs/templates" "$dir/scripts/tests" "$dir/.githooks" "$dir/.github/workflows"
+  for file in AGENTS.md README.md STATE.md .agents/bootstrap.md .agents/stack-presets.md \
+    .agents/master-prompt.template.md .agents/prd.template.md docs/adr/0000-adopcion-gobernanza-agentica.md \
+    docs/adr/0000-template.md docs/adr/0001-perfiles-y-aplicabilidad.md docs/adr/0003-autonomia-y-continuidad.md \
+    docs/adr/0004-producto-comportamiento-y-cierre.md docs/adr/0005-gobernanza-proporcional-al-riesgo.md \
+    docs/adr/0006-gobernanza-verificable.md specs/templates/feature.template.md .env.example \
+    docs/agent-capabilities.md docs/seed-upgrades.md .github/workflows/verify.yml; do
+    printf '# Fixture: %s\nContenido deliberado del contrato.\n' "$file" > "$dir/$file"
+  done
   cp "$REPO_ROOT/scripts/verify.sh" "$dir/scripts/verify.sh"
-  touch \
-    "$dir/AGENTS.md" \
-    "$dir/README.md" \
-    "$dir/STATE.md" \
-    "$dir/.agents/bootstrap.md" \
-    "$dir/.agents/stack-presets.md" \
-    "$dir/.agents/master-prompt.template.md" \
-    "$dir/.agents/prd.template.md" \
-    "$dir/docs/adr/0000-adopcion-gobernanza-agentica.md" \
-    "$dir/docs/adr/0000-template.md" \
-    "$dir/docs/adr/0001-perfiles-y-aplicabilidad.md" \
-    "$dir/docs/adr/0003-autonomia-y-continuidad.md" \
-    "$dir/docs/adr/0004-producto-comportamiento-y-cierre.md" \
-    "$dir/specs/templates/feature.template.md" \
-    "$dir/.env.example" \
-    "$dir/scripts/install-hooks.sh" \
-    "$dir/scripts/tests/verify-contract.sh" \
-    "$dir/.githooks/pre-commit" \
-    "$dir/.github/workflows/verify.yml"
+  if [[ -f "$REPO_ROOT/scripts/verify-structure.sh" ]]; then
+    cp "$REPO_ROOT/scripts/verify-structure.sh" "$dir/scripts/verify-structure.sh"
+  fi
+  cp "$REPO_ROOT/scripts/install-hooks.sh" "$dir/scripts/install-hooks.sh"
+  cp "$REPO_ROOT/.githooks/pre-commit" "$dir/.githooks/pre-commit"
+  # Stubs bound recursion; separate tests prove the root executes and propagates them.
+  printf '#!/usr/bin/env bash\nprintf "CONTRACT_REACHED\\n"\n' > "$dir/scripts/tests/verify-contract.sh"
+  printf '#!/usr/bin/env bash\nprintf "PILOT_REACHED\\n"\n' > "$dir/scripts/tests/bootstrap-pilot.sh"
+  chmod +x "$dir/scripts/verify.sh"
   printf 'phase=seed\n' > "$dir/.agents/project-profile.conf"
 }
 
-make_project_manifest() {
-  local dir="$1"
-  printf 'phase=project\napplication_kind=web\nsurfaces=browser\nlanguage=python\nruntime=cpython\nframework=flask\npersistence=sqlite\nci_platform=github-actions\n' > "$dir/.agents/project-profile.conf"
-  mkdir -p "$dir/docs/adr" "$dir/specs/templates"
-  touch "$dir/docs/adr/0002-arquitectura-base.md" "$dir/specs/templates/feature.md" "$dir/PROMPT-MAESTRO.md" "$dir/PRD.md" "$dir/docs/learning.md"
+make_project() {
+  local dir="$1" file
+  make_seed_fixture "$dir"
+  printf 'phase=project\napplication_kind=cli\nsurfaces=terminal\nlanguage=bash\nruntime=bash\nframework=not_applicable\npersistence=not_applicable\nci_platform=not_applicable\n' > "$dir/.agents/project-profile.conf"
+  for file in docs/adr/0002-arquitectura-base.md specs/templates/feature.md PROMPT-MAESTRO.md PRD.md docs/learning.md; do
+    printf '# Fixture aprobada\nResultado y autoridad de prueba explícitos.\n' > "$dir/$file"
+  done
+  printf '#!/usr/bin/env bash\nprintf "PROJECT_GATE_REACHED\\n"\n' > "$dir/scripts/verify-project.sh"
+  chmod +x "$dir/scripts/verify-project.sh"
 }
 
-assert_status() {
-  local expected="$1"
-  local dir="$2"
-  local label="$3"
-  local output
-  local actual
-
-  if output="$(cd "$dir" && bash scripts/verify.sh 2>&1)"; then
-    actual=0
-  else
-    actual=$?
-  fi
-
-  if [[ "$actual" -eq "$expected" ]]; then
+assert_gate() {
+  local expected="$1" dir="$2" label="$3" contains="${4:-}" output actual
+  if output="$(cd "$dir" && bash scripts/verify.sh 2>&1)"; then actual=0; else actual=$?; fi
+  if [[ "$actual" -eq "$expected" && "$output" == *"$contains"* ]]; then
     PASS_COUNT=$((PASS_COUNT + 1))
   else
     FAIL_COUNT=$((FAIL_COUNT + 1))
-    printf 'FAIL: %s (expected exit %s, got %s)\n%s\n' "$label" "$expected" "$actual" "$output"
+    printf 'FAIL: %s (expected %s and %s, got %s)\n%s\n' "$label" "$expected" "$contains" "$actual" "$output"
   fi
 }
 
-assert_output_contains() {
-  local dir="$1"
-  local expected="$2"
-  local label="$3"
-  local output
-
-  if output="$(cd "$dir" && bash scripts/verify.sh 2>&1)" && [[ "$output" == *"$expected"* ]]; then
-    PASS_COUNT=$((PASS_COUNT + 1))
-  else
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-    printf 'FAIL: %s (expected output to contain: %s)\n%s\n' "$label" "$expected" "${output:-<no output>}"
-  fi
-}
-
-assert_failure_contains() {
-  local dir="$1"
-  local expected="$2"
-  local label="$3"
-  local output
-  local actual
-
-  if output="$(cd "$dir" && bash scripts/verify.sh 2>&1)"; then
-    actual=0
-  else
-    actual=$?
-  fi
-
-  if [[ "$actual" -ne 0 && "$output" == *"$expected"* ]]; then
-    PASS_COUNT=$((PASS_COUNT + 1))
-  else
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-    printf 'FAIL: %s (expected a failing gate mentioning: %s)\n%s\n' "$label" "$expected" "${output:-<no output>}"
-  fi
-}
-
-VALID_SEED="$TEMP_ROOT/valid-seed"
-make_seed_fixture "$VALID_SEED"
-assert_status 0 "$VALID_SEED" "accept a complete technology-neutral seed without package.json"
-
-for required in .agents/stack-presets.md .agents/master-prompt.template.md .agents/prd.template.md; do
-  fixture="$TEMP_ROOT/missing-$(basename "$required")"
-  make_seed_fixture "$fixture"
-  rm "$fixture/$required"
-  assert_failure_contains "$fixture" "$required" "reject seed without $required"
+seed="$TEMP_ROOT/seed"
+make_seed_fixture "$seed"
+assert_gate 0 "$seed" 'neutral seed without package.json'
+assert_gate 0 "$seed" 'root runs contract tests' CONTRACT_REACHED
+assert_gate 0 "$seed" 'root runs pilot' PILOT_REACHED
+for file in .agents/stack-presets.md .agents/master-prompt.template.md .agents/prd.template.md \
+  docs/adr/0001-perfiles-y-aplicabilidad.md docs/adr/0005-gobernanza-proporcional-al-riesgo.md \
+  docs/adr/0006-gobernanza-verificable.md; do
+  dir="$TEMP_ROOT/missing-seed-$(basename "$file")"
+  make_seed_fixture "$dir"
+  rm "$dir/$file"
+  assert_gate 1 "$dir" "missing seed $file" "$file"
 done
-
-MISSING_SEED="$TEMP_ROOT/missing-seed"
-make_seed_fixture "$MISSING_SEED"
-rm "$MISSING_SEED/docs/adr/0001-perfiles-y-aplicabilidad.md"
-assert_status 1 "$MISSING_SEED" "reject a seed missing a required governance artifact"
-
-PROJECT="$TEMP_ROOT/project-without-package"
-make_seed_fixture "$PROJECT"
-make_project_manifest "$PROJECT"
-cat > "$PROJECT/scripts/verify-project.sh" <<'SCRIPT'
-#!/usr/bin/env bash
-printf 'PROJECT_GATE_REACHED\n'
-SCRIPT
-chmod +x "$PROJECT/scripts/verify-project.sh"
-assert_status 0 "$PROJECT" "dispatch project verification from the explicit phase without package.json"
-assert_output_contains "$PROJECT" "PROJECT_GATE_REACHED" "run the profile-specific verifier"
-
-for required in PROMPT-MAESTRO.md docs/learning.md PRD.md; do
-  fixture="$TEMP_ROOT/missing-project-$(basename "$required")"
-  make_seed_fixture "$fixture"
-  make_project_manifest "$fixture"
-  cp "$PROJECT/scripts/verify-project.sh" "$fixture/scripts/verify-project.sh"
-  chmod +x "$fixture/scripts/verify-project.sh"
-  rm "$fixture/$required"
-  assert_failure_contains "$fixture" "$required" "reject project without $required"
+for value in '' '   '; do
+  dir="$TEMP_ROOT/empty-seed"
+  make_seed_fixture "$dir"
+  printf '%s\n' "$value" > "$dir/AGENTS.md"
+  assert_gate 1 "$dir" 'empty/whitespace governance' AGENTS.md
 done
+for phase in unknown 'seed=project'; do
+  printf 'phase=%s\n' "$phase" > "$seed/.agents/project-profile.conf"
+  assert_gate 1 "$seed" 'invalid phase' phase
+done
+printf 'phase=seed\nphase=seed\n' > "$seed/.agents/project-profile.conf"
+assert_gate 1 "$seed" 'duplicate phase' phase
+rm "$seed/.agents/project-profile.conf"
+assert_gate 1 "$seed" 'missing profile' project-profile.conf
+make_seed_fixture "$seed"
+printf '#!/usr/bin/env bash\nexit 42\n' > "$seed/scripts/tests/verify-contract.sh"
+assert_gate 42 "$seed" 'propagate contract failure'
+make_seed_fixture "$seed"
+printf '#!/usr/bin/env bash\nexit 43\n' > "$seed/scripts/tests/bootstrap-pilot.sh"
+assert_gate 43 "$seed" 'propagate pilot failure'
+make_seed_fixture "$seed"
+printf '#!/usr/bin/env bash\nif\n' > "$seed/scripts/install-hooks.sh"
+assert_gate 2 "$seed" 'reject invalid shell syntax' install-hooks.sh
 
-FAILED_PROJECT="$TEMP_ROOT/failed-project-gate"
-make_seed_fixture "$FAILED_PROJECT"
-make_project_manifest "$FAILED_PROJECT"
-printf '#!/usr/bin/env bash\nexit 7\n' > "$FAILED_PROJECT/scripts/verify-project.sh"
-chmod +x "$FAILED_PROJECT/scripts/verify-project.sh"
-assert_status 7 "$FAILED_PROJECT" "propagate the project verifier failure without declaring success"
+project="$TEMP_ROOT/project"
+make_project "$project"
+assert_gate 0 "$project" 'project without package.json' PROJECT_GATE_REACHED
+assert_gate 0 "$project" 'project also runs contract tests' CONTRACT_REACHED
+for file in AGENTS.md STATE.md PRD.md PROMPT-MAESTRO.md docs/learning.md docs/adr/0002-arquitectura-base.md specs/templates/feature.md; do
+  dir="$TEMP_ROOT/project-$(basename "$file")"
+  make_project "$dir"
+  rm "$dir/$file"
+  assert_gate 1 "$dir" "missing project $file" "$file"
+  printf ' \t\n' > "$dir/$file"
+  assert_gate 1 "$dir" "empty project $file" "$file"
+done
+for marker in 'HITO0_PENDING' '[Nombre del producto y primera entrega]' 'Borrador | Aprobado'; do
+  make_project "$project"
+  printf '# PRD\n%s\n' "$marker" > "$project/PRD.md"
+  assert_gate 1 "$project" 'unresolved critical template' PRD.md
+done
+for entry in 'PROMPT-MAESTRO.md|[Modalidad, responsable]' 'PROMPT-MAESTRO.md|[Registro ligero en STATE autorizado]' 'docs/adr/0002-arquitectura-base.md|[Detalla la decisión técnica]'; do
+  file="${entry%%|*}"
+  marker="${entry#*|}"
+  make_project "$project"
+  printf '# Documento pendiente\n%s\n' "$marker" > "$project/$file"
+  assert_gate 1 "$project" 'critical authority or architecture field unresolved' "$file"
+done
+make_project "$project"
+printf '# PRD\n[Guía](docs/learning.md) y REQ-1: salida verificable.\n' > "$project/PRD.md"
+assert_gate 0 "$project" 'ordinary markdown links are valid'
+printf '# Plantilla\n[Resultado verificable]\n' > "$project/specs/templates/feature.md"
+assert_gate 0 "$project" 'reusable spec placeholders allowed'
+printf '#!/usr/bin/env bash\nexit 7\n' > "$project/scripts/verify-project.sh"
+assert_gate 7 "$project" 'propagate project verifier failure'
+rm "$project/scripts/verify-project.sh"
+assert_gate 1 "$project" 'missing project verifier' verify-project.sh
+make_project "$project"
+chmod -x "$project/scripts/verify-project.sh"
+assert_gate 1 "$project" 'non-executable verifier' verify-project.sh
+for key in application_kind surfaces language runtime framework persistence ci_platform; do
+  make_project "$project"
+  sed -i "/^$key=/d" "$project/.agents/project-profile.conf"
+  assert_gate 1 "$project" "missing $key" "$key"
+  printf '%s=undecided\n' "$key" >> "$project/.agents/project-profile.conf"
+  assert_gate 1 "$project" "undecided $key" "$key"
+  sed -i "s/^$key=.*/$key=   /" "$project/.agents/project-profile.conf"
+  assert_gate 1 "$project" "whitespace $key" "$key"
+  printf '%s=duplicate\n' "$key" >> "$project/.agents/project-profile.conf"
+  assert_gate 1 "$project" "duplicate $key" "$key"
+done
+make_project "$project"
+sed -i 's/phase=project/phase=initializing/' "$project/.agents/project-profile.conf"
+assert_gate 0 "$project" 'initializing runs project gate and stays pending' 'pendiente de sellado'
+rm "$project/.agents/bootstrap.md"
+assert_gate 1 "$project" 'initialization retains recovery entrypoint' bootstrap.md
 
-MISSING_PROJECT_GATE="$TEMP_ROOT/missing-project-gate"
-make_seed_fixture "$MISSING_PROJECT_GATE"
-make_project_manifest "$MISSING_PROJECT_GATE"
-assert_status 1 "$MISSING_PROJECT_GATE" "reject project phase without a project verifier"
-
-INCOMPLETE_PROFILE="$TEMP_ROOT/incomplete-profile"
-make_seed_fixture "$INCOMPLETE_PROFILE"
-make_project_manifest "$INCOMPLETE_PROFILE"
-awk -F= '$1 != "framework"' "$INCOMPLETE_PROFILE/.agents/project-profile.conf" > "$INCOMPLETE_PROFILE/.agents/project-profile.conf.tmp"
-mv "$INCOMPLETE_PROFILE/.agents/project-profile.conf.tmp" "$INCOMPLETE_PROFILE/.agents/project-profile.conf"
-assert_failure_contains "$INCOMPLETE_PROFILE" "framework" "report an unset project profile field"
-
-DUPLICATE_PROFILE="$TEMP_ROOT/duplicate-profile-field"
-make_seed_fixture "$DUPLICATE_PROFILE"
-make_project_manifest "$DUPLICATE_PROFILE"
-printf 'language=rust\n' >> "$DUPLICATE_PROFILE/.agents/project-profile.conf"
-assert_failure_contains "$DUPLICATE_PROFILE" "exactamente una vez: language" "reject a duplicate project profile field"
-
-INVALID_PHASE="$TEMP_ROOT/invalid-phase"
-make_seed_fixture "$INVALID_PHASE"
-printf 'phase=unknown\n' > "$INVALID_PHASE/.agents/project-profile.conf"
-assert_status 1 "$INVALID_PHASE" "reject an unknown phase"
-
-HOOK_REPO="$TEMP_ROOT/hook-install"
-mkdir -p "$HOOK_REPO/scripts" "$HOOK_REPO/.githooks"
-git -C "$HOOK_REPO" init --quiet
-cp "$REPO_ROOT/scripts/install-hooks.sh" "$HOOK_REPO/scripts/install-hooks.sh"
-cp "$REPO_ROOT/.githooks/pre-commit" "$HOOK_REPO/.githooks/pre-commit"
-chmod +x "$HOOK_REPO/scripts/install-hooks.sh" "$HOOK_REPO/.githooks/pre-commit"
-if output="$(bash "$HOOK_REPO/scripts/install-hooks.sh" 2>&1)" && [[ "$(git -C "$HOOK_REPO" config --local --get core.hooksPath)" == ".githooks" ]]; then
+hook_repo="$TEMP_ROOT/hooks"
+mkdir -p "$hook_repo/scripts" "$hook_repo/.githooks"
+git -C "$hook_repo" init --quiet
+cp "$REPO_ROOT/scripts/install-hooks.sh" "$hook_repo/scripts/"
+cp "$REPO_ROOT/.githooks/pre-commit" "$hook_repo/.githooks/"
+bash "$hook_repo/scripts/install-hooks.sh" >/dev/null
+if [[ "$(git -C "$hook_repo" config --local --get core.hooksPath)" == .githooks ]]; then
   PASS_COUNT=$((PASS_COUNT + 1))
 else
   FAIL_COUNT=$((FAIL_COUNT + 1))
-  printf 'FAIL: install the local hook in a new clone\n%s\n' "${output:-<no output>}"
+  printf 'FAIL: hook installation\n'
 fi
-
 printf 'verify contract: %s passed, %s failed\n' "$PASS_COUNT" "$FAIL_COUNT"
 [[ "$FAIL_COUNT" -eq 0 ]]

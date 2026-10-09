@@ -50,6 +50,7 @@ Actualiza la spec antes de ampliar archivos; no cambia por sí misma arquitectur
 - **DoD común:** AGENTS.md; añade aquí únicamente condiciones propias.
 - **Comandos y suites de cierre:** [Exactos; `./scripts/verify.sh` y controles obligatorios de la DoD; TDD para comportamiento, revisión pertinente para documentación/presentación]
 - **Chequeo rápido de iteración:** [Comando y cobertura confirmados / ninguno; no sustituye el cierre]
+- **Revisión Tier 1:** [Modalidad acordada, responsable y evidencia; si no aplica, motivo. No confundir revisión propia con independiente]
 - **Condiciones adicionales:** [Controles específicos o ninguno]
 
 ## 6. Cierre y continuidad
@@ -58,4 +59,4 @@ Actualiza la spec antes de ampliar archivos; no cambia por sí misma arquitectur
 - **Aprendizaje:** [Hallazgo con evidencia en docs/learning.md o sin hallazgos nuevos; semilla puede registrarlo aquí]
 - **Commit:** [Política, mensaje y resultado; requerido pendiente impide cierre]
 - **Checkpoint en STATE:** [Cobertura del PRD, siguiente paso y bloqueos con contador/hipótesis si existen]
-- **Compactación:** [Según política confirmada y capacidades disponibles; no reiniciar la meta ni contador por compactar]
+- **Continuidad:** checkpoint según AGENTS; capacidades opcionales en docs/agent-capabilities.md.

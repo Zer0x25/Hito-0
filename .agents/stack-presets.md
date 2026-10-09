@@ -26,7 +26,7 @@ La base TypeScript reduce la diversidad de lenguajes en una web con equipo famil
 
 ## Elección de persistencia: SQLite y PostgreSQL
 
-En cada entrevista, al tratar persistencia, ofrece siempre ambas opciones. Recomienda según requisitos y confirma la elección; si no hay datos duraderos, registra `not_applicable`.
+Primero determina si hacen falta datos duraderos. Si no, registra `not_applicable` y omite este bloque. Si se necesitan, compara SQLite y PostgreSQL cuando sean pertinentes, o explica otra opción justificada por los requisitos. No repitas elecciones ya confirmadas.
 
 | Opción | Cuándo recomendarla | Qué comprobar |
 |---|---|---|
@@ -97,7 +97,7 @@ Fuentes: [criterios de elección de SQLite](https://www.sqlite.org/whentouse.htm
 
 Si el PRD exige capturar cambios sin conexión y reconciliar varios dispositivos, consulta el [perfil full stack offline-first](../docs/architecture-profiles/full-stack-offline-first.md) (`offline-first-postgres`). Es una referencia propuesta, pendiente de validación: no es arquitectura aceptada ni base automática para toda PWA. Si basta lectura offline, evalúa caché; si la app es siempre conectada, omite el motor.
 
-Este perfil complementa el destino elegido; sus componentes deben ser compatibles con ese runtime. Presenta siempre SQLite y PostgreSQL: PostgreSQL central es una decisión del perfil, y otro motor exige una variante explícita y pruebas propias. SSE, TanStack Query, monorepo y ejemplos de asistencia son opcionales o ilustrativos. En ADR 0002 registra la selección, variantes, duración offline, pérdida local admisible, ámbito, conflictos y garantías a probar; no añadas un campo obligatorio al manifiesto por esta referencia.
+Este perfil complementa el destino elegido; sus componentes deben ser compatibles con ese runtime. PostgreSQL central es una decisión de este perfil opcional; compara otro motor cuando sea pertinente y documenta su variante y pruebas propias. SSE, TanStack Query, monorepo y ejemplos de asistencia son opcionales o ilustrativos. En ADR 0002 registra la selección, variantes, duración offline, pérdida local admisible, ámbito, conflictos y garantías a probar; no añadas un campo obligatorio al manifiesto por esta referencia.
 
 ## Registro y generación
 

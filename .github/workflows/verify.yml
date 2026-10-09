@@ -1,4 +1,4 @@
-name: Hito 0 seed contract
+name: Hito 0 quality gate
 
 on:
   push:
@@ -7,15 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-  verify-seed:
+  verify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check shell syntax
-        run: bash -n scripts/verify.sh scripts/install-hooks.sh scripts/tests/verify-contract.sh .githooks/pre-commit
-      - name: Test phase-aware quality gate
-        run: bash scripts/tests/verify-contract.sh
-      - name: Verify seed structure or selected project profile
+      - name: Run complete quality gate
         run: ./scripts/verify.sh

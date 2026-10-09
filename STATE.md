@@ -1,42 +1,20 @@
 # Estado del Proyecto: Semilla Hito 0
 
-Este archivo es el tablero de trabajo de la plantilla. `Hito 0` describe el estado del molde; `.agents/project-profile.conf` es el marcador legible por scripts que distingue semilla de aplicación inicializada.
+- Fase: `seed`; molde maestro, sin stack ni producto seleccionado.
+- Base revisada: `46c519b` (Seed 007).
+- Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Fase actual: Hito 0 — Plantilla agnóstica
+## Última unidad — Seed 008
 
-- **Estado:** Semilla lista para inicializar proyectos; este repositorio sigue siendo el molde maestro.
-- **Perfil:** `phase=seed` (sin stack ni dominio de aplicación seleccionados).
-- **Especificación de mantenimiento:** [`specs/seed-007-gobernanza-por-niveles.md`](specs/seed-007-gobernanza-por-niveles.md) — Tier 1 implementada y verificada documentalmente; entrega en el commit de Seed 007. Seeds 001–006 implementadas; Seed 006 está en `295fd18`.
-- **Última verificación completada:** Seed 007: 14 escenarios revisados documentalmente, enlaces/formato/alcance correctos, ADR previos intactos, gate semilla y whitespace (salida 0). Sin pruebas de comportamiento de agente/app. Seed 006 mantiene su perfil offline propuesto, sin protocolo implementado; Seed 005 conserva evidencia previa del contrato 16/16.
+- Meta: aplicar auditoría de gobernanza, simplificar operación y reforzar evidencia ejecutable.
+- Unidad: [Seed 008](specs/seed-008-gobernanza-verificable.md), Tier 1; autoridad del usuario «aplica las mejoras», 2026-10-09.
+- Decisión: [ADR 0006](docs/adr/0006-gobernanza-verificable.md); ADR anteriores intactos.
+- Entrega Git: commit, push a origin/main y release con tag v4.0.0 autorizados por el usuario el 2026-10-09. Referencia: commit de Seed 008 `feat(seed): reforzar gobernanza y validacion de Hito 0`. Confirmar HEAD/main remoto/tag y release al concluir; no repetir si ya coinciden.
+- Estado: cerrada; CA-1–CA-7 comprobados con los límites documentados en la spec.
+- Evidencia: `./scripts/verify.sh`, salida 0; contrato 76/76; piloto con dos interrupciones recuperadas, rojo/verde Tier 2 y Tier 3 y reanudación. Sintaxis, enlaces, alcance, ADR históricos y `git diff --check` correctos.
+- Siguiente paso: comprobar entrega de v4.0.0; si está publicada, ninguna unidad activa. En la próxima adopción autorizada, crear un derivado y probar una entrevista real siguiendo docs/seed-upgrades.md; no iniciar ni publicar automáticamente. No repetir Seed 008.
+- Falta de progreso: contador 0, sin bloqueo.
 
-## Registro de hitos
+## Cobertura y límites
 
-- [x] **Hito -1: Blueprint inicial** — gobernanza SDD/ADR, entrevista Hito 0 y quality gate semilla.
-- [x] **Hito 0: Núcleo neutral y perfiles** — desacople de stack, entrevista adaptativa, plantillas condicionales, perfil explícito y gate por fase. Verificación estructural superada; todavía no existe una aplicación inicializada en este repositorio.
-- [x] **Hito 0: Recomendaciones por despliegue** — catálogo opcional VPS, Cloudflare, Cloud Run y personalizado; selección y generación según requisitos y confirmación en entrevista.
-- [x] **Hito 0: Producto, comportamiento y cierre** — PRD como fuente de alcance, BDD dentro de specs, DoD común y política de falta de progreso.
-- [x] **Hito 0: Gobernanza por niveles** — registro ligero Tier 3, spec breve Tier 2 y controles Tier 1 según riesgo; entrevista, prompt y continuidad adaptados, con revisión documental.
-- [ ] **Hito 0 de una aplicación derivada:** pendiente. Se inicia en un repositorio creado desde esta plantilla con `Inicia Hito 0`.
-- [ ] **Hito 1:** primera spec de producto en el repositorio derivado.
-
-## Registro de tareas recientes
-
-| Fecha | Autor | Acción | Resultado |
-|---|---|---|---|
-| 2026-10-03 | Antigravity | Inicializó el blueprint agnóstico | Semilla vinculada a GitHub |
-| 2026-10-06 | Codex | Separó gobernanza común de perfiles de aplicación | Contrato de gate: 9/9; gate semilla y revisión de whitespace: salida 0 |
-| 2026-10-06 | Codex | Incorporó recomendaciones de stack por destino al bootstrap | Cinco escenarios revisados documentalmente; gate semilla y whitespace: salida 0 |
-| 2026-10-06 | Codex | Añadió oferta de SQLite y PostgreSQL según alcance en entrevista | Cuatro escenarios revisados documentalmente; gate semilla y whitespace: salida 0 |
-| 2026-10-06 | Codex | Integró PRD, BDD, DoD y detección de repetición improductiva | Contrato 16/16; gate, sintaxis y formato: salida 0 |
-| 2026-10-07 | Codex | Incorporó perfil offline-first opcional con contratos corregidos | Revisión documental, gate y formato: salida 0; sin app ni protocolo ejecutado |
-| 2026-10-07 | Codex | Integró gobernanza por niveles y registro ligero, ADR 0005 | 14 escenarios revisados documentalmente; enlaces/alcance/ADR correctos; gate y formato: salida 0 |
-
-## Checkpoint del molde
-
-- **Meta de mantenimiento:** integrar gobernanza proporcional al riesgo; criterios CA-1–CA-7 en Seed 007.
-- **Unidad terminada:** Seed 007, Tier 1; criterios CA-1–CA-7 verificados documentalmente y gate estructural superado. No hay unidad activa ni goal de producto.
-- **Entrega Git:** commit y push autorizados el 2026-10-07 por «commit and push». Referencia: commit de Seed 007 (`feat(seed): integrar gobernanza proporcional al riesgo`), que incluye este checkpoint; hash y confirmación remota se informan al concluir la operación. Antes de publicar, HEAD estaba en Seed 006 (`295fd18`) y `origin/main` en Seed 005 (`1bea0d4`); el push publica ambos avances. Releases sin cambios.
-- **Siguiente paso:** al reanudar, comprobar si el commit de Seed 007 ya está en el remoto; si falta, completar la entrega Git autorizada. Con publicación confirmada, crear un repositorio derivado e iniciar Hito 0 para confirmar niveles, autoridad y comandos reales. No repetir implementación ni aprendizaje de Seed 007; ante un fallo Git, conservar el checkpoint y resolver solo esa entrega.
-- **Falta de progreso:** sin bloqueo activo; contador 0.
-- **Continuidad:** aprendizaje de mantenimiento en Seed 007; `/learn` y `/compact` no ejecutados en esta sesión. Retomar desde este checkpoint si hace falta.
-- **Pendiente de evidencia:** una app derivada que complete entrevista, sellado y desarrollo; las pruebas del despachador no sustituyen esa validación.
+La inicialización real de un proyecto de usuario sigue pendiente. El piloto temporal usa decisiones simuladas, no certifica entrevista ni stacks alternativos. El perfil offline-first continúa propuesto y sin implementación. Una aplicación completa requiere PRD y evidencia propios.
