@@ -1,5 +1,7 @@
 # ADR [Número]: [Título de la Decisión Arquitectónica]
 
+> **Sobre la numeración:** en un derivado, `0002` queda reservado para la arquitectura base del producto y **`0007` en adelante** para sus ADR reales. Los ADR `0000–0006` de la semilla son **decisiones del molde** (gobernanza del flujo agéntico) y sirven de **ejemplo/guía**; no son plantillas a copiar para el proyecto. Cada ADR del proyecto usa su propio número libre y su propia decisión.
+
 - **Fecha:** YYYY-MM-DD
 - **Estado:** Propuesto | Aceptado | Reemplazado | Obsoleto
 - **Aplica a:** [Proyecto, perfil, módulo o superficie a los que afecta]

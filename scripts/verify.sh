@@ -14,6 +14,12 @@ if [[ "$PHASE" == seed ]]; then
   bash scripts/tests/bootstrap-pilot.sh
   printf 'Gate de semilla completo. No certifica una aplicación de producto.\n'
 else
+  # Mechanical scope-lock + per-criterion evidence: warns in initializing, blocks in project.
+  if [[ "$PHASE" == project ]]; then
+    bash scripts/verify-scope.sh
+  else
+    bash scripts/verify-scope.sh warn || true
+  fi
   bash -n scripts/verify-project.sh
   ./scripts/verify-project.sh
   if [[ "$PHASE" == initializing ]]; then

@@ -39,6 +39,36 @@ make_project() {
   done
   printf '#!/usr/bin/env bash\nprintf "PROJECT_GATE_REACHED\\n"\n' > "$dir/scripts/verify-project.sh"
   chmod +x "$dir/scripts/verify-project.sh"
+  # Scope-lock wiring: the project gate delegates to verify-scope.sh (fail-safe by default).
+  cp "$REPO_ROOT/scripts/verify-scope.sh" "$dir/scripts/verify-scope.sh" 2>/dev/null || true
+}
+
+# A project fixture with an active unit, its spec (authorized paths) and a git base,
+# so the scope-lock and evidence controls can be exercised deterministically.
+make_scoped_project() {
+  local dir="$1"
+  make_project "$dir"
+  git -C "$dir" init --quiet
+  git -C "$dir" config user.email contract@test
+  git -C "$dir" config user.name contract
+  printf 'Unidad activa: SCOPED-001. Siguiente: cerrar. Contador: 0.\n' > "$dir/STATE.md"
+  cat > "$dir/specs/SCOPED-001.md" <<'SPEC'
+# SCOPED-001 — unidad de contrato
+> Estado: Cerrada
+## 4. Archivos autorizados
+- Editables: src/core/keep.ts, tests/keep.spec.ts, STATE.md
+- Protegidos: nada adicional
+## 5. Criterios
+| CA-1 | comportamiento | tests/keep.spec.ts | verde |
+- Evidencia CA-1: `bash tests/keep.spec.ts` → 0 passed.
+SPEC
+  mkdir -p "$dir/src/core" "$dir/tests"
+  printf 'ok\n' > "$dir/src/core/keep.ts"
+  printf '#!/usr/bin/env bash\nexit 0\n' > "$dir/tests/keep.spec.ts"
+  git -C "$dir" add -A >/dev/null 2>&1
+  git -C "$dir" commit --quiet -m base >/dev/null 2>&1
+  # Local base so scope-lock can diff without a network remote (fail-safe stays for real clones).
+  git -C "$dir" update-ref refs/remotes/origin/main "$(git -C "$dir" rev-parse HEAD)"
 }
 
 assert_gate() {
@@ -141,6 +171,54 @@ sed -i 's/phase=project/phase=initializing/' "$project/.agents/project-profile.c
 assert_gate 0 "$project" 'initializing runs project gate and stays pending' 'pendiente de sellado'
 rm "$project/.agents/bootstrap.md"
 assert_gate 1 "$project" 'initialization retains recovery entrypoint' bootstrap.md
+
+# --- Seed 009: mechanical scope-lock and per-criterion evidence ---------------
+# BDD-1: authorized change passes the gate.
+scoped="$TEMP_ROOT/scoped-ok"
+make_scoped_project "$scoped"
+printf 'cambio autorizado\n' >> "$scoped/src/core/keep.ts"
+assert_gate 0 "$scoped" 'scope-lock passes authorized change' 'Alcance verificado'
+
+# BDD-2: change outside authorized files blocks the gate with SCOPE VIOLATION.
+scoped="$TEMP_ROOT/scoped-violation"
+make_scoped_project "$scoped"
+printf 'fuera de alcance\n' > "$scoped/src/core/forbidden.ts"
+assert_gate 1 "$scoped" 'scope-lock blocks unauthorized change' 'SCOPE VIOLATION'
+
+# BDD-3: closed unit missing per-criterion evidence blocks with EVIDENCIA FALTANTE.
+scoped="$TEMP_ROOT/scoped-no-evidence"
+make_scoped_project "$scoped"
+sed -i '/Evidencia CA-1/d' "$scoped/specs/SCOPED-001.md"
+assert_gate 1 "$scoped" 'closed unit without evidence blocks' 'EVIDENCIA FALTANTE'
+
+# BDD-4/CA-5: seed does not run scope-lock; initializing warns without blocking.
+seed_scope="$TEMP_ROOT/seed-scope"
+make_seed_fixture "$seed_scope"
+printf 'phase=seed\n' > "$seed_scope/.agents/project-profile.conf"
+assert_gate 0 "$seed_scope" 'seed skips scope-lock' 'Gate de semilla'
+scoped="$TEMP_ROOT/scoped-init-warn"
+make_scoped_project "$scoped"
+sed -i 's/phase=project/phase=initializing/' "$scoped/.agents/project-profile.conf"
+printf 'Unidad activa: SCOPED-001.\n' > "$scoped/STATE.md"
+printf 'fuera de alcance\n' > "$scoped/src/core/forbidden.ts"
+assert_gate 0 "$scoped" 'initializing warns without blocking on scope' 'pendiente de sellado'
+
+# Fail-safe: unparseable unit/spec never blocks (gate governs flow, not structure).
+scoped="$TEMP_ROOT/scoped-unparseable"
+make_scoped_project "$scoped"
+printf 'sin unidad declarada\n' > "$scoped/STATE.md"
+assert_gate 0 "$scoped" 'unparseable unit fails safe (warns)'
+scoped="$TEMP_ROOT/scoped-nosection"
+make_scoped_project "$scoped"
+sed -i '/## 4. Archivos autorizados/,/## 5/d' "$scoped/specs/SCOPED-001.md"
+assert_gate 1 "$scoped" 'missing authorized-paths section in project blocks' 'Archivos autorizados'
+
+# No base available (fresh clone, no remote): scope-lock omits with warning, no block.
+scoped="$TEMP_ROOT/scoped-nobase"
+make_scoped_project "$scoped"
+git -C "$scoped" update-ref -d refs/remotes/origin/main
+printf 'cualquier cambio\n' >> "$scoped/src/core/keep.ts"
+assert_gate 0 "$scoped" 'no base omits scope-lock without blocking'
 
 hook_repo="$TEMP_ROOT/hooks"
 mkdir -p "$hook_repo/scripts" "$hook_repo/.githooks"

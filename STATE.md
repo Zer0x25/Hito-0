@@ -4,15 +4,15 @@
 - Base revisada: `46c519b` (Seed 007).
 - Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Última unidad — Seed 008
+## Última unidad — Seed 009 (V4.1)
 
-- Meta: aplicar auditoría de gobernanza, simplificar operación y reforzar evidencia ejecutable.
-- Unidad: [Seed 008](specs/seed-008-gobernanza-verificable.md), Tier 1; autoridad del usuario «aplica las mejoras», 2026-10-09.
-- Decisión: [ADR 0006](docs/adr/0006-gobernanza-verificable.md); ADR anteriores intactos.
-- Entrega Git: commit, push a origin/main y release con tag v4.0.0 autorizados por el usuario el 2026-10-09. Referencia: commit de Seed 008 `feat(seed): reforzar gobernanza y validacion de Hito 0`. Confirmar HEAD/main remoto/tag y release al concluir; no repetir si ya coinciden.
-- Estado: cerrada; CA-1–CA-7 comprobados con los límites documentados en la spec.
-- Evidencia: `./scripts/verify.sh`, salida 0; contrato 76/76; piloto con dos interrupciones recuperadas, rojo/verde Tier 2 y Tier 3 y reanudación. Sintaxis, enlaces, alcance, ADR históricos y `git diff --check` correctos.
-- Siguiente paso: comprobar entrega de v4.0.0; si está publicada, ninguna unidad activa. En la próxima adopción autorizada, crear un derivado y probar una entrevista real siguiendo docs/seed-upgrades.md; no iniciar ni publicar automáticamente. No repetir Seed 008.
+- Meta: gobernanza ejecutable — scope-lock y evidencia mecánica en el gate; aclarar ADR del molde vs. proyecto y rol de las seeds.
+- Unidad: [Seed 009](specs/seed-009-gobernanza-ejecutable.md), Tier 1; autoridad del usuario «aprobado», 2026-10-10.
+- Decisión de diseño: los ADR 0000–0006 son del molde (ejemplo/guía); el proyecto derivado usa 0002 + 0007+. Sin ADR nuevo de proyecto (espacio 0007+ libre). ADR anteriores intactos.
+- Estado: cerrada; CA-1–CA-7 verificados con fixtures deterministas del contrato. Cambios locales sin commit (sin política de commits autorizada).
+- Evidencia: `./scripts/verify.sh` salida 0; contrato 84/84 (76 previos + 8 nuevos); rojo 74/10 expuso 4 bugs reales corregidos; piloto completo. `bash -n` de `verify-scope.sh` sin error.
+- Commit: pendiente de autorización del usuario.
+- Siguiente paso: definir política de commits y decidir entrega V4.1 (commit/tag/release) o dejarla en local. Integración Notion/Linear queda para V5. Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 
 ## Cobertura y límites
