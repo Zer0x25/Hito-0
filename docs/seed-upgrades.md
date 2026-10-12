@@ -21,6 +21,10 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 
 - Aprendizaje auditable: `docs/templates/learning.md` (formato canónico), `docs/harness-metrics.md` (auditorías del molde, vive en el molde) y ritual de cierre de sesión (`hermes sessions export --format md --cwd <repo>` → `docs/sessions/` → commit). Todo convención documentada; el gate no cambia y nunca lee sesiones ni aprendizaje. El ritual es opt-in y sin hook: la ausencia de export no bloquea el cierre.
 
+## Cambios de Seed 012
+
+- `HITO0_PENDING` deja de ser placeholder crítico bloqueante en PRD/PROMPT-MAESTRO/ADR-0002: el gate lo cuenta y advierte por fase (initializing advierte; project advierte + exige que los pendientes queden registrados en STATE, o falla; seed no corre). Los demás placeholders `[...]` siguen bloqueando. Cierra la fricción F-01; elimina el workaround de redactar los archivos sellados sin el marcador.
+
 ## Tamaño de STATE
 
 Mantener meta, unidad activa, bloqueos, siguiente paso y cierres recientes. Al superar diez cierres, mover los más antiguos íntegros a `docs/history/` con enlace desde STATE. No archivar trabajo activo, autorizaciones aún necesarias ni contadores pendientes. IDs y evidencia siguen siendo consultables; Git no reemplaza el enlace al historial.

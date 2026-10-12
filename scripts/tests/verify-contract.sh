@@ -262,6 +262,38 @@ mkdir -p "$nc_dir2"
 rc=$?
 if [[ $rc -eq 0 ]] && grep -q '[^[:space:]]' "$nc_dir2/out.md"; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: salida "pegar a mano" sin capacidad debe ser fail-safe exit 0 (rc=%s)\n' "$rc"; fi
 
+# --- Seed 012: gate↔HITO0_PENDING ---------------------------------------------
+# HITO0_PENDING is a legitimate pending marker, not a critical placeholder:
+# count + warn by phase, never fail on it alone. Other placeholders keep failing.
+# BDD-1: initializing + HITO0_PENDING → warns, exit 0.
+pend="$TEMP_ROOT/pending"
+make_project "$pend"
+sed -i 's/^phase=project/phase=initializing/' "$pend/.agents/project-profile.conf"
+printf 'Meta con campo critico HITO0_PENDING sin resolver.\n' >> "$pend/PRD.md"
+if out="$(cd "$pend" && bash scripts/verify-structure.sh 2>&1)"; then
+  if [[ "$out" == *HITO0_PENDING* ]]; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-1 no advirtio de HITO0_PENDING\n%s\n' "$out"; fi
+else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-1 initializing+HITO0_PENDING debe salir 0\n%s\n' "$out"; fi
+
+# BDD-2: project + HITO0_PENDING + pendientes en STATE → warns, exit 0.
+pend2="$TEMP_ROOT/pending2"
+make_project "$pend2"
+printf 'Meta con campo critico HITO0_PENDING sin resolver.\n' >> "$pend2/PRD.md"
+printf '## Pendientes criticos\n- HITO0_PENDING: resolver hosting.\n' >> "$pend2/STATE.md"
+assert_gate 0 "$pend2" 'BDD-2 project+HITO0_PENDING+STATE advierte sin bloquear'
+
+# BDD-3: project + HITO0_PENDING SIN registro en STATE → fails.
+pend3="$TEMP_ROOT/pending3"
+make_project "$pend3"
+printf 'Meta con campo critico HITO0_PENDING sin resolver.\n' >> "$pend3/PRD.md"
+assert_gate 1 "$pend3" 'BDD-3 project+HITO0_PENDING sin STATE bloquea'
+
+# BDD-4: a generic placeholder must still fail after the fix.
+gen="$TEMP_ROOT/genplaceholder"
+make_project "$gen"
+sed -i 's/^phase=project/phase=initializing/' "$gen/.agents/project-profile.conf"
+printf 'Producto: [Nombre del producto y primera entrega].\n' >> "$gen/PRD.md"
+assert_gate 1 "$gen" 'BDD-4 placeholder generico sigue bloqueando'
+
 hook_repo="$TEMP_ROOT/hooks"
 mkdir -p "$hook_repo/scripts" "$hook_repo/.githooks"
 git -C "$hook_repo" init --quiet

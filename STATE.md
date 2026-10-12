@@ -4,16 +4,15 @@
 - Base revisada: `46c519b` (Seed 007).
 - Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Última unidad — Seed 011 (V5.1)
+## Última unidad — Seed 012 (V5.2)
 
-- Meta: aprendizaje auditable del molde — formato canónico de aprendizaje, auditoría del molde (harness-metrics) y ritual de cierre de sesión, todo convención documentada sin código en el gate.
-- Unidad: [Seed 011](specs/seed-011-aprendizaje-auditable.md), Tier 1; autoridad del usuario «aprobado», 2026-10-12.
-- Decisión de diseño: el derivado no carga con métricas — `docs/harness-metrics.md` vive en el molde y lo escribe el supervisor al auditar un derivado. El ritual de cierre de sesión es opt-in y sin hook (usa `hermes sessions export --format md`, redactado por defecto). El gate nunca lee sesiones ni aprendizaje (CA-4 verificado sobre `verify.sh`; las menciones previas de `learning.md` en scope/structure son controles estructurales, no dependencia de contenido). Sin ADR de proyecto nuevo (espacio 0007+ libre). ADR anteriores intactos.
-- Estado: cerrada; CA-1–CA-5 verificados. Cambios locales sin commit (sin política de commits autorizada).
-- Evidencia: `./scripts/verify.sh` salida 0; contrato 90/90 (sin cambios de comportamiento); `git diff --check` 0; ADR 0000–0006 intactos.
-- Primeras entradas de harness-metrics: F-01 contradicción gate↔HITO0_PENDING (media, candidata a seed futura) y F-02 unidades "pendiente de revisión humana" sin mecanismo de cierre explícito (baja, observación), ambas con evidencia del derivado GYM-2026.
-- Commit: pendiente de autorización del usuario.
-- Siguiente paso: investigar V5.2 (alinear gate↔HITO0_PENDING u otra fricción a definir con el usuario). Sin unidad activa.
+- Meta: alinear el gate con la política de HITO0_PENDING — cerrar la fricción F-01 del harness-metrics.
+- Unidad: [Seed 012](specs/seed-012-gate-pendientes.md), Tier 1; autoridad del usuario «aprobado», 2026-10-12.
+- Decisión de diseño: `HITO0_PENDING` sale del patrón de placeholders críticos y pasa a pendiente legítimo rastreado. El gate lo cuenta y advierte por fase (initializing advierte; project advierte + exige registro en STATE o falla; seed no corre). Los demás placeholders `[...]` siguen bloqueando igual (quirúrgico). Sin ADR de proyecto nuevo (espacio 0007+ libre). ADR anteriores intactos.
+- Estado: cerrada; CA-1–CA-5 verificados con ciclo rojo→verde a nivel de contrato. F-01 cerrada en harness-metrics. Cambios locales sin commit (sin política de commits autorizada).
+- Evidencia: `./scripts/verify.sh` salida 0; contrato 94/94 (90 previos + 4 de Seed 012, con rojo confirmado pre-fix volteado a verde); `git diff --check` 0; ADR 0000–0006 intactos.
+- Commit: pendiente de autorización del usuario. Probable release V5.2 (commit + tag v5.2.0 + release) tras autorización.
+- Siguiente paso: definir próxima fricción/unidad. F-02 (unidades "pendiente de revisión humana" sin mecanismo de cierre) queda como observación. Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 
 ## Cobertura y límites

@@ -35,6 +35,7 @@
 - **Evidencia:** `scripts/verify-structure.sh` líneas 48-52; `docs/learning.md` del derivado (entrada 2026-10-11); STATE.md del derivado (pendientes en STATE, no en archivos gateados).
 - **Severidad:** media — workaround en cada derivado con pendientes reales.
 - **Candidata a seed:** sí — alinear el gate con la política de HITO0_PENDING (permitir el marcador en archivos aprobados durante initializing/project).
+- **Estado: CERRADA (Seed 012, V5.2, 2026-10-12).** El gate ahora cuenta los `HITO0_PENDING` y advierte por fase (initializing advierte; project advierte + exige registro en STATE o falla; seed no corre); los demás placeholders siguen bloqueando. El workaround ya no es necesario. Evidencia del cierre: `specs/seed-012-gate-pendientes.md`, contrato 94/94, gate raíz exit 0.
 
 #### [F-02] Unidades "pendiente de revisión humana" sin mecanismo de cierre explícito
 
@@ -50,4 +51,4 @@
 
 ### Recomendación
 
-- F-01 justifica tocar el molde (seed futura: alinear gate↔HITO0_PENDING). F-02 es observación, no acción todavía.
+- F-01 **cerrada** (Seed 012, V5.2): el gate alineado con la política de HITO0_PENDING — cuenta y advierte por fase, no bloquea; los demás placeholders siguen bloqueando. F-02 es observación, no acción todavía.
