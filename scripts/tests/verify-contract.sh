@@ -294,6 +294,68 @@ sed -i 's/^phase=project/phase=initializing/' "$gen/.agents/project-profile.conf
 printf 'Producto: [Nombre del producto y primera entrega].\n' >> "$gen/PRD.md"
 assert_gate 1 "$gen" 'BDD-4 placeholder generico sigue bloqueando'
 
+# --- Seed 014: Tier 3 ↔ gate (LIG-* sin spec) --------------------------------
+# RED first: policy (AGENTS §2) authorizes Tier 3 light units LIG-* in STATE
+# without a spec, but the current gate VIOLATES any active unit without a spec
+# when work is in flight. The fix makes verify-scope.sh read the authorized
+# paths from the STATE light-unit block for LIG-* (fail-safe), while a business
+# unit with no spec AND no LIG block keeps being a violation.
+# BDD-1: LIG-* with in-flight changes inside its authorized paths → exit 0.
+lig="$TEMP_ROOT/lig"
+make_scoped_project "$lig"
+# Commit the spec removal into the BASE so it is not an in-flight change: the LIG
+# unit replaces the spec-based record; the setup artifact must not count as work.
+git -C "$lig" rm -q --cached specs/SCOPED-001.md >/dev/null 2>&1
+rm -f "$lig/specs/SCOPED-001.md"
+git -C "$lig" add -A >/dev/null 2>&1
+git -C "$lig" commit --quiet -m "retirar spec base" >/dev/null 2>&1
+git -C "$lig" update-ref refs/remotes/origin/main "$(git -C "$lig" rev-parse HEAD)"
+cat >> "$lig/STATE.md" <<'ST'
+
+LIG-001 — corrección acotada — Tier 3: restaura comportamiento confirmado — en curso
+Alcance/autoridad: src/core/keep.ts; zer0x; 2026-10-12
+ST
+sed -i 's/^Unidad activa: SCOPED-001/Unidad activa: LIG-001/' "$lig/STATE.md"
+printf 'cambio dentro de alcance\n' >> "$lig/src/core/keep.ts"
+if out="$(cd "$lig" && bash scripts/verify-scope.sh 2>&1)"; then
+  if [[ "$out" == *"Alcance verificado"* || "$out" == *"sin cambios"* ]]; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-1 LIG-* en vuelo no paso\n%s\n' "$out"; fi
+else
+  FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-1 LIG-* en vuelo debe salir 0\n%s\n' "$out"
+fi
+
+# BDD-2: LIG-* with a change OUTSIDE its authorized paths → SCOPE VIOLATION.
+lig2="$TEMP_ROOT/lig2"
+make_scoped_project "$lig2"
+git -C "$lig2" rm -q --cached specs/SCOPED-001.md >/dev/null 2>&1
+rm -f "$lig2/specs/SCOPED-001.md"
+git -C "$lig2" add -A >/dev/null 2>&1
+git -C "$lig2" commit --quiet -m "retirar spec base" >/dev/null 2>&1
+git -C "$lig2" update-ref refs/remotes/origin/main "$(git -C "$lig2" rev-parse HEAD)"
+cat >> "$lig2/STATE.md" <<'ST'
+
+LIG-001 — corrección acotada — Tier 3: restaura comportamiento confirmado — en curso
+Alcance/autoridad: src/core/keep.ts; zer0x; 2026-10-12
+ST
+sed -i 's/^Unidad activa: SCOPED-001/Unidad activa: LIG-001/' "$lig2/STATE.md"
+printf 'cambio fuera de alcance\n' >> "$lig2/src/core/forbidden.ts"
+if out="$(cd "$lig2" && bash scripts/verify-scope.sh 2>&1)"; then
+  FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-2 LIG-* fuera de alcance debe bloquear\n%s\n' "$out"
+else
+  if [[ "$out" == *"SCOPE VIOLATION"* ]]; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: BDD-2 no bloqueo por SCOPE VIOLATION\n%s\n' "$out"; fi
+fi
+
+# BDD-3: business unit, no spec, no LIG block, changes in flight → violation.
+lig3="$TEMP_ROOT/lig3"
+make_scoped_project "$lig3"
+git -C "$lig3" rm -q --cached specs/SCOPED-001.md >/dev/null 2>&1
+rm -f "$lig3/specs/SCOPED-001.md"
+git -C "$lig3" add -A >/dev/null 2>&1
+git -C "$lig3" commit --quiet -m "retirar spec base" >/dev/null 2>&1
+git -C "$lig3" update-ref refs/remotes/origin/main "$(git -C "$lig3" rev-parse HEAD)"
+sed -i 's/^Unidad activa: SCOPED-001/Unidad activa: FEAT-999/' "$lig3/STATE.md"
+printf 'cambio sin alcance\n' >> "$lig3/src/core/keep.ts"
+assert_gate 1 "$lig3" 'BDD-3 unidad sin spec ni LIG sigue siendo violacion'
+
 hook_repo="$TEMP_ROOT/hooks"
 mkdir -p "$hook_repo/scripts" "$hook_repo/.githooks"
 git -C "$hook_repo" init --quiet

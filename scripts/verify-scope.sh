@@ -48,36 +48,65 @@ if [[ -z "$spec_file" ]]; then
   [[ -n "$match" && -f "specs/${match}" ]] && spec_file="specs/${match}"
 fi
 if [[ -z "$spec_file" ]]; then
-  # Unit declared but spec absent. Only a REAL block when work is actually in
-  # flight (changes vs base); sealing Hito-0 with a declared next-unit but no
-  # committed work yet is a legitimate state → fail-safe warn, not a violation.
-  if git rev-parse --verify origin/main >/dev/null 2>&1 && [[ -n "$(git diff --name-only origin/main...HEAD 2>/dev/null; git diff --name-only origin/main 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null)" ]]; then
-    [[ "$MODE" == check ]] && violation "la unidad '$unit_id' no tiene spec (se esperaba specs/${unit_id}.md) y hay cambios sin alcance declarado." || { warn "spec de '$unit_id' ausente con cambios; se omite verificación de alcance."; exit 0; }
+  # Tier 3 light unit (LIG-*) is authorized by policy to live in STATE without a
+  # spec (AGENTS §2, ADR 0005). If such a block exists, read its authorized paths
+  # from STATE and verify scope against them — the gate must not contradict policy.
+  if [[ "$unit_id" == LIG-* ]]; then
+    lig_mode=1
+    lig_paths="$(grep -iE "^Alcance/autoridad:" STATE.md 2>/dev/null | head -1 | sed -E 's/^Alcance\/autoridad:[[:space:]]*//I')"
+    if [[ -n "$lig_paths" ]]; then
+      # Split on both ',' and ';', drop prose (the entry is "path; author; date":
+      # keep only the first path-like token per segment).
+      mapfile -t authorized < <(printf '%s\n' "$lig_paths" \
+        | tr ',;' '\n\n' \
+        | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' \
+        | grep -E '[./]' | sort -u)
+      authorized+=("STATE.md" "docs/learning.md")
+      if [[ "${#authorized[@]}" -eq 0 ]]; then
+        [[ "$MODE" == check ]] || { warn "bloque LIG-* de '$unit_id' sin rutas parseables; se omite verificación de alcance."; }
+        exit 0
+      fi
+    else
+      # No parseable authorized paths → fail-safe (advise, never block).
+      [[ "$MODE" == check ]] || warn "unidad LIG-* '$unit_id' sin rutas en STATE; se omite verificación de alcance."
+      exit 0
+    fi
   else
-    [[ "$MODE" == check ]] || warn "spec de '$unit_id' ausente sin cambios en vuelo; se omite verificación de alcance."
-    exit 0
+    # Unit declared but spec absent and not a light unit. Only a REAL block when
+    # work is actually in flight (changes vs base); sealing Hito-0 with a declared
+    # next-unit but no committed work yet is legitimate → fail-safe warn.
+    if git rev-parse --verify origin/main >/dev/null 2>&1 && [[ -n "$(git diff --name-only origin/main...HEAD 2>/dev/null; git diff --name-only origin/main 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null)" ]]; then
+      [[ "$MODE" == check ]] && violation "la unidad '$unit_id' no tiene spec (se esperaba specs/${unit_id}.md) y hay cambios sin alcance declarado." || { warn "spec de '$unit_id' ausente con cambios; se omite verificación de alcance."; exit 0; }
+    else
+      [[ "$MODE" == check ]] || warn "spec de '$unit_id' ausente sin cambios en vuelo; se omite verificación de alcance."
+      exit 0
+    fi
   fi
 fi
 
 # --- Parse authorized paths from "## 4. Archivos autorizados" ----------------
-# Authorized section runs to the next "## " heading. Only bullet lines whose
-# content is path-like (contains '/' or '.') become entries; prose is ignored.
-section="$(awk '/^## 4\. Archivos autorizados/{f=1;next} /^## /{f=0} f' "$spec_file")"
-if [[ -z "$section" ]]; then
-  [[ "$MODE" == check ]] && violation "la spec de '$unit_id' no tiene sección '## 4. Archivos autorizados'." || { warn "sin sección de archivos autorizados; se omite verificación de alcance."; exit 0; }
-fi
-mapfile -t authorized < <(printf '%s\n' "$section" \
-  | grep -E '^[[:space:]]*-' \
-  | sed -E 's/^[[:space:]]*-[[:space:]]*//' \
-  | sed -E 's/^(Editables|Protegidos|Rutas|Ampliación)[[:space:]]*:[[:space:]]*//I' \
-  | tr ',' '\n' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' \
-  | grep -E '[./]' \
-  | grep -vE '^(nada|ninguno|adicional|si|no)$' \
-  | sort -u)
-# The unit's own spec, STATE and learning are always authorized bookkeeping files.
-authorized+=("specs/${unit_id}.md" "STATE.md" "docs/learning.md")
-if [[ "${#authorized[@]}" -eq 0 ]]; then
-  [[ "$MODE" == check ]] && violation "no se pudieron extraer rutas autorizadas de la spec de '$unit_id'." || { warn "sin rutas autorizadas extraíbles; se omite verificación de alcance."; exit 0; }
+# For a Tier 3 light unit (LIG-*) the paths were already read from STATE above
+# (lig_mode=1) and re-reading a non-existent spec would be wrong; skip to diff.
+if [[ "${lig_mode:-0}" != 1 ]]; then
+  # Authorized section runs to the next "## " heading. Only bullet lines whose
+  # content is path-like (contains '/' or '.') become entries; prose is ignored.
+  section="$(awk '/^## 4\. Archivos autorizados/{f=1;next} /^## /{f=0} f' "$spec_file")"
+  if [[ -z "$section" ]]; then
+    [[ "$MODE" == check ]] && violation "la spec de '$unit_id' no tiene sección '## 4. Archivos autorizados'." || { warn "sin sección de archivos autorizados; se omite verificación de alcance."; exit 0; }
+  fi
+  mapfile -t authorized < <(printf '%s\n' "$section" \
+    | grep -E '^[[:space:]]*-' \
+    | sed -E 's/^[[:space:]]*-[[:space:]]*//' \
+    | sed -E 's/^(Editables|Protegidos|Rutas|Ampliación)[[:space:]]*:[[:space:]]*//I' \
+    | tr ',' '\n' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//' \
+    | grep -E '[./]' \
+    | grep -vE '^(nada|ninguno|adicional|si|no)$' \
+    | sort -u)
+  # The unit's own spec, STATE and learning are always authorized bookkeeping files.
+  authorized+=("specs/${unit_id}.md" "STATE.md" "docs/learning.md")
+  if [[ "${#authorized[@]}" -eq 0 ]]; then
+    [[ "$MODE" == check ]] && violation "no se pudieron extraer rutas autorizadas de la spec de '$unit_id'." || { warn "sin rutas autorizadas extraíbles; se omite verificación de alcance."; exit 0; }
+  fi
 fi
 
 # --- Diff against authorized base (origin/main); skip if no base -------------

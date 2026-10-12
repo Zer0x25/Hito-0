@@ -29,6 +29,11 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 
 - Protocolo de preparación de capa: antes de implementar una unidad que toca una capa nueva (UI/frontend, offline, dominio con superficie de usuario) sin decisión de diseño previa, el agente escribe un ADR técnico de system design, lo valida con el humano (propone/valida) y recién implementa. La lógica de negocio y autorización quedan SOLO en backend; el ADR es reutilizable entre módulos. Guía en `docs/templates/adr-frontend.md`; campo `Decisión de diseño previa:` en la spec. Cierra la fricción F-03; el gate no cambia.
 
+## Cambios de Seed 014 (V5.4) — Robustez de base
+
+- **Fix Tier 3 ↔ gate:** `verify-scope.sh` reconoce unidades ligeras `LIG-*` (Tier 3, autorizadas por política a vivir en STATE sin spec). Lee sus rutas de `Alcance/autoridad:` en STATE (partiendo por `,` y `;`, descartando autor/fecha) y verifica el alcance contra ellas; una ruta fuera de la lista sigue siendo SCOPE VIOLATION; una unidad de negocio sin spec ni bloque LIG sigue siendo violación (no se abre la puerta a commits sin alcance); bloque de STATE no parseable → fail-safe (advierte, no bloquea). Cierra la fricción F-04. Contrato 94→97 (BDD-1/2/3).
+- **Decisiones transversales obligatorias:** antes de tocar código de un dominio, el ADR base declara modelo de errores, contexto tenant/auth en backend y estrategia de tests. Se cierran una vez por dominio, se validan con el humano y los módulos siguientes las reutilizan (sin ceremonia si ya están). Documentado en AGENTS §7 y referenciado en PROMPT-MAESTRO; el gate no cambia ni lee ADRs de dominio. Cierra la fricción F-05.
+
 ## Tamaño de STATE
 
 Mantener meta, unidad activa, bloqueos, siguiente paso y cierres recientes. Al superar diez cierres, mover los más antiguos íntegros a `docs/history/` con enlace desde STATE. No archivar trabajo activo, autorizaciones aún necesarias ni contadores pendientes. IDs y evidencia siguen siendo consultables; Git no reemplaza el enlace al historial.

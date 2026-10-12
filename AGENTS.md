@@ -105,6 +105,14 @@ El gate raíz ejecuta integridad documental, sintaxis Bash y contrato de fases; 
 
 El objetivo: que elegir el system design tarde no implique reescribir el frontend, y que todos los módulos (pagos, socios, clases) reutilicen un mismo patrón de frontend. Es secuencia documentada; el gate no cambia ni lee ADRs de frontend.
 
+**Decisiones transversales obligatorias antes de tocar un dominio (Seed 014):** el protocolo de capa cubre *cómo* se ve una capa; este bloque cubre tres decisiones que atraviesan *todos* los módulos de un dominio y que, si cada uno las improvisa, obligan a reescribir. Antes de implementar código de un dominio (endpoints, persistencia, lógica de negocio), el ADR base de ese dominio debe declarar:
+
+1. **Modelo de errores** — taxonomía (validación / authz / conflicto / no-encontrado / interno), forma del payload de fallo, y cómo se propaga al cliente. Un módulo no inventa su propia estructura de error.
+2. **Contexto tenant/auth en backend** — cómo viaja la identidad del tenant/usuario (middleware, contexto de request), cómo se aplica la autorización, y la garantía de aislamiento entre tenants. **La autorización vive SOLO en el backend.**
+3. **Estrategia de tests** — cómo se aíslan los tests de integración (transacciones/fixtures/DB de test), sin colisiones entre suites que corren contra el mismo recurso.
+
+Se cierran **una vez por dominio** en el ADR base y se validan con el humano (como el paso 3 del protocolo de capa). Los módulos siguientes las reutilizan; no se repite el ADR por módulo. Si el ADR base ya las declara → arrancá el ciclo normal, sin ceremonia. Es secuencia documentada: el gate no lee ni valida ADRs de dominio.
+
 Un chequeo rápido opcional, confirmado con comandos y cobertura reales del perfil, sirve para iterar. Su resultado no sustituye el gate raíz ni los controles obligatorios de la DoD al cerrar cualquier nivel. El agente no omite suites ni reduce el gate por reclasificar una tarea.
 
 ### 8. Desarrollo y continuidad de sesión

@@ -76,3 +76,19 @@
 ### Recomendación
 
 - F-03 **cerrada** (Seed 013, V5.3): protocolo de preparación de capa documentado; el gate no cambia. F-02 sigue como observación. Nota de supervisión: GYM-2026 permanece en V5.0 por diseño — no se le empujan los fixes del molde; las fricciones se aprenden sobre su base congelada.
+
+#### [F-04] Contradicción Tier 3 ↔ gate: el gate bloquea lo que la política autoriza
+
+- **Qué pasa:** la política (AGENTS §2, registro ligero Tier 3) autoriza unidades `LIG-*` en STATE sin spec, pero `verify-scope.sh` violaba cualquier unidad activa sin spec cuando había cambios en vuelo. Un agente que seguía la política no podía commitear. El contrato no cubría `LIG-*`, así que el bug pasó desapercibido.
+- **Evidencia:** `scripts/verify-scope.sh` líneas 50-55 (antes del fix) — violación incondicional por falta de spec; la auditoría del flujo lo detectó y el contrato rojo lo confirmó (BDD-1 RED pre-fix).
+- **Severidad:** alta — el gate contradice la política que debe hacer cumplir; cualquier unidad ligera real quedaba bloqueada.
+- **Candidata a seed:** sí — reconocer `LIG-*` y verificar el alcance contra las rutas del bloque de STATE (fail-safe).
+- **Estado: CERRADA (Seed 014, V5.4, 2026-10-12).** `verify-scope.sh` reconoce `LIG-*`: lee sus rutas de `Alcance/autoridad:` en STATE (partiendo por `,` y `;`, descartando autor/fecha) y verifica contra ellas; ruta fuera de la lista sigue siendo SCOPE VIOLATION; una unidad de negocio sin spec ni bloque LIG sigue siendo violación; bloque no parseable → fail-safe (advierte, no bloquea). Contrato 94→97 (BDD-1/2/3). Evidencia del cierre: `specs/seed-014-robustez-base.md`, contrato 97/97, gate raíz exit 0, ADR 0000–0006 intactos.
+
+#### [F-05] Decisiones transversales no ordenadas antes de tocar un dominio
+
+- **Qué pasa:** el protocolo de capa (Seed 013) cubre *cómo* se ve una capa, pero tres decisiones que atraviesan todos los módulos de un dominio —modelo de errores, contexto tenant/auth, estrategia de tests— quedaban a criterio de cada módulo. GYM-2026 ya pagó la improvisación: colisiones de TRUNCATE en tests de integración que obligaron a improvisar aislamiento.
+- **Evidencia:** `docs/learning.md` del derivado (colisiones de TRUNCATE); ADR-0002 del derivado blindó separación UI/lógica y authz en backend pero no declaró modelo de errores ni estrategia de tests.
+- **Severidad:** media/alta — improvisar por módulo obliga a reescribir.
+- **Candidata a seed:** sí — declarar las tres transversales obligatorias en el ADR base antes de tocar un dominio.
+- **Estado: CERRADA (Seed 014, V5.4, 2026-10-12).** AGENTS §7 gana «Decisiones transversales obligatorias antes de tocar un dominio» (una vez por dominio, validadas por el humano, reutilizadas por los módulos siguientes, sin ceremonia si ya están) y PROMPT-MAESTRO lo referencia. El gate no cambia ni lee ADRs de dominio. Evidencia del cierre: AGENTS.md, `.agents/master-prompt.template.md`, `specs/seed-014-robustez-base.md`.
