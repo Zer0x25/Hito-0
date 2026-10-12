@@ -17,6 +17,10 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 - `phase=initializing` identifica inicialización sin sellar. Para un proyecto ya terminado conservar `phase=project`. Para inicialización incompleta recuperar bootstrap desde la versión adoptada (o `.done`), conservar decisiones y fijar `initializing` hasta validar y sellar.
 - La semilla requiere GitHub Actions; un derivado puede usar otra CI manteniendo el mismo gate y su preparación de runtime.
 
+## Cambios de Seed 011
+
+- Aprendizaje auditable: `docs/templates/learning.md` (formato canónico), `docs/harness-metrics.md` (auditorías del molde, vive en el molde) y ritual de cierre de sesión (`hermes sessions export --format md --cwd <repo>` → `docs/sessions/` → commit). Todo convención documentada; el gate no cambia y nunca lee sesiones ni aprendizaje. El ritual es opt-in y sin hook: la ausencia de export no bloquea el cierre.
+
 ## Tamaño de STATE
 
 Mantener meta, unidad activa, bloqueos, siguiente paso y cierres recientes. Al superar diez cierres, mover los más antiguos íntegros a `docs/history/` con enlace desde STATE. No archivar trabajo activo, autorizaciones aún necesarias ni contadores pendientes. IDs y evidencia siguen siendo consultables; Git no reemplaza el enlace al historial.

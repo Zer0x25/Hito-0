@@ -107,6 +107,12 @@ Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas,
 
 ## Fase 4: Sellado y transición
 
+*(Al cerrar esta fase o cualquier unidad, antes de dar la sesión por terminada — ver Seed 011.)*
+
+### Ritual de cierre de sesión (opt-in)
+
+Si la sesión dejó commits, antes de cerrarla: exportá la conversación con `hermes sessions export --format md --cwd <repo>` a `docs/sessions/<fecha>-<titulo>.md` y commiteala junto a la unidad. Enlazá el export en la spec con el campo opcional `Sesión:`. Es **opt-in**: si no exportás, el gate pasa igual (evidencia adicional, no requisito). El export se redacta por defecto; nunca guardes tokens/API keys. Cada aprendizaje del flujo va a `docs/learning.md` con el formato canónico.
+
 Cuando estén creados el PRD, el ADR, el perfil, la plantilla personalizada, el prompt maestro, aprendizaje, el verificador y la CI:
 
 1. Conserva `phase=initializing`, bootstrap y disparador de reanudación. Actualiza README con propósito y comandos reales; STATE indica paso pendiente, decisiones confirmadas, evidencia y contador. No repitas respuestas ni generes de nuevo archivos válidos.
