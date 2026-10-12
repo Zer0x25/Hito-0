@@ -14,7 +14,7 @@
 - Evidencia: `./scripts/verify.sh` salida 0; contrato 90/90 (84 previos + 6 nuevos, incluido gate de capacidad CA-8); piloto completo; `git diff --check` 0; ADR 0000–0006 intactos.
 - Gate de capacidad añadido tras revisión del usuario: entornos sin tools de Notion (VS Code Copilot, Antigravity, Codex, OpenCode) sugieren conexión según harness y ofrecen pegar a mano o Modo B, sin bloquear.
 - Commit: pendiente de autorización del usuario.
-- Siguiente paso: definir política de commits y decidir entrega V5 (commit/tag/release) o dejarla en local. Linear (V5.5) queda para después de validar el patrón Notion. Sin unidad activa.
+- Siguiente paso: definir política de commits y decidir entrega V5 (commit/tag/release) o dejarla en local. Sin features adicionales planificadas; Linear descartado por decisión del usuario (no aporta gobernanza en la versión actual, duplica STATE). Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 
 ## Cobertura y límites

@@ -2,7 +2,7 @@
 
 > Estado: Cerrada — implementada y verificada, cambios locales sin commit
 > Nivel: Tier 1 — Riesgo alto; altera el bootstrap/entrevista y añade una dependencia externa (Notion) al flujo de inicialización.
-> Requisitos: mantenimiento de semilla; cierra la hoja de ruta V5 acordada (Notion primero, Linear en V5.5).
+> Requisitos: mantenimiento de semilla; implementa la hoja de ruta V5 acordada (Notion como contexto).
 > ADR aplicables: 0001, 0003, 0004, 0005, 0006 (conservados). Sin ADR nuevo de proyecto: el cambio de gobernanza se registra en esta spec + AGENTS (política vigente), conforme al mecanismo de ADR 0006. Espacio 0007+ libre para el proyecto derivado.
 > Aceptación: usuario, por aprobación explícita de esta spec. No autoaceptada.
 
@@ -12,7 +12,7 @@ Usa esta plantilla según AGENTS y ADR 0005. Tier 1: detalla invariantes, riesgo
 
 - **Resultado observable:** el arranque de Hito 1 puede alimentarse del contexto ya existente en Notion (Modo A, enriquecido) o generar ese contexto desde cero (Modo B), en ambos casos trasladando decisiones con su estado (confirmada/pendiente) y dejando trazabilidad mecánica entre Notion y las specs del repo. El gate no depende de Notion.
 - **Incluye:** sección "Arranque con Notion" en `AGENTS.md` y `bootstrap.md`; campo `Contexto (Notion)` en la plantilla de spec; lectura de la página contenedora + database de decisiones vía MCP; **gate de capacidad** (verificar que el entorno puede leer Notion antes de ofrecer Modo A, con sugerencia de conexión por harness y tres salidas); política de estado confirmada/pendiente → `HITO0_PENDING`; campo `Trazabilidad` con mapeo mecánico a IDs de spec; script de lectura `scripts/notion-context.sh` (solo lectura, opt-in); creación de la página/database en Modo B.
-- **Excluye:** integración Linear (V5.5); escritura automática en Notion al cerrar unidades; sincronización bidireccional o webhooks; gate leyendo Notion para validar cierres; migración del proyecto GYM existente (ese es un derivado concreto, no el molde).
+- **Excluye:** integración Linear (descartada por decisión del usuario: no aporta gobernanza en la versión actual, duplica STATE); escritura automática en Notion al cerrar unidades; sincronización bidireccional o webhooks; gate leyendo Notion para validar cierres; migración del proyecto GYM existente (ese es un derivado concreto, no el molde).
 - **Pendientes críticos / supuestos aceptados:** el conector Notion está disponible vía MCP (OAuth activo); un derivado que use Modo A debe compartir su página/database con la integración. El alcance de lectura por defecto es la página contenedora completa declarada por el humano.
 
 ## 2. Contratos e invariantes
