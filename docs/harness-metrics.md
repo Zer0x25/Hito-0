@@ -52,3 +52,27 @@
 ### Recomendación
 
 - F-01 **cerrada** (Seed 012, V5.2): el gate alineado con la política de HITO0_PENDING — cuenta y advierte por fase, no bloquea; los demás placeholders siguen bloqueando. F-02 es observación, no acción todavía.
+
+---
+
+## 2026-10-12 — Auditoría: GYM-2026 (phase=project, HEAD 6df3928) — flujo detenido en la UI
+
+### Fricciones observadas
+
+#### [F-03] Sin protocolo de preparación de capa: el flujo se detuvo al pasar al frontend
+
+- **Qué pasa:** el derivado llegó al borde de la UI sin saber cómo arrancarla. La spec 003 (pagos) excluyó explícitamente la UI para «la pasada de diseño», pero esa pasada nunca se planificó como unidad ni tiene un protocolo que la ordene. El agente quedó sin guía: backend o frontend, y ninguna. Elegir el system design tarde implica reescribir el frontend.
+- **Evidencia:** `specs/003-planes-pagos-caja.md` L23 («UI (se hace después, en la pasada de diseño)»); el ciclo de AGENTS §8 dice «siguiente unidad» sin decir cómo prepararla; ADR-0002 del derivado YA blindó separación UI/lógica (L28/L43/L50) pero no hay unidad de system design de frontend en la secuencia.
+- **Severidad:** media/alta — detuvo el proyecto real y puede costar una reescritura del frontend.
+- **Candidata a seed:** sí — protocolo de preparación de capa (ADR de system design antes de tocar UI).
+- **Estado: CERRADA (Seed 013, V5.3, 2026-10-12).** AGENTS y PROMPT-MAESTRO ganan la sección «Preparación de la siguiente unidad / capa»: si la unidad toca una capa nueva sin ADR de system design, el agente lo escribe, lo valida con el humano (propone/valida) y recién implementa; la lógica de negocio y autorización quedan SOLO en backend; el ADR es reutilizable entre módulos. Plantilla `docs/templates/adr-frontend.md` + campo `Decisión de diseño previa:` en la spec. Evidencia del cierre: `specs/seed-013-preparacion-capa.md`, contrato 94/94, gate raíz exit 0.
+
+### Señales de que el flujo funciona
+
+- El ADR-0002 del derivado blindó por sí solo la separación UI/lógica y «autorización siempre en el servidor» (L28/L43/L50) — el patrón de ADR base funciona sin que el molde lo fuerce.
+- La spec 003 es Tier 1 honesta: introduce dinero, separa registro/validación, declara concurrencia e idempotencia, y excluye lo que no toca (UI, sauna, reservas). El traslado Modo A produjo specs de calidad real.
+- Gate del derivado en verde a través de 5 commits de producto (auth, UI, seed-dev, fixes) con evidencia end-to-end real contra Postgres.
+
+### Recomendación
+
+- F-03 **cerrada** (Seed 013, V5.3): protocolo de preparación de capa documentado; el gate no cambia. F-02 sigue como observación. Nota de supervisión: GYM-2026 permanece en V5.0 por diseño — no se le empujan los fixes del molde; las fricciones se aprenden sobre su base congelada.

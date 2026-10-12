@@ -96,6 +96,15 @@ El gate raíz ejecuta integridad documental, sintaxis Bash y contrato de fases; 
 
 **Aprendizaje auditable y ritual de cierre de sesión (Seed 011):** el molde institucionaliza tres mecanismos ligeros, todos de convención documentada, sin código en el gate. (1) *Formato canónico de aprendizaje*: cada derivado lleva `docs/learning.md` con el formato de `docs/templates/learning.md` (fecha, unidad, hallazgo, evidencia archivo:línea, aplicación futura, severidad, ¿toca el molde?). (2) *Auditoría del molde*: `docs/harness-metrics.md` vive en el **molde**, no en el derivado; el supervisor escribe ahí las fricciones observadas al auditar un derivado. (3) *Ritual de cierre de sesión*: antes de cerrar una sesión que dejó commits, exportá la conversación con `hermes sessions export --format md --cwd <repo>` a `docs/sessions/<fecha>-<titulo>.md` y commiteala junto a la unidad; enlazá el export en la spec con el campo opcional `Sesión:`. Es **opt-in y sin hook**: la ausencia de export no bloquea el gate (evidencia adicional, no requisito). El export se redacta por defecto; nunca guardes tokens/API keys en las sesiones. El gate NUNCA lee sesiones ni aprendizaje.
 
+**Preparación de la siguiente unidad / capa (Seed 013):** el ciclo de una unidad (sección 8) dice *qué* hacer; este protocolo dice *cómo preparar la siguiente* cuando toca una capa nueva, para no reescribirla después. Antes de implementar una unidad que toca una capa nueva (UI/frontend, offline, o un dominio con superficie de usuario):
+
+1. **¿Existe un ADR de system design de esa capa?** (para frontend: `docs/templates/adr-frontend.md` como guía). Si la capa ya está cubierta por un ADR vigente → arrancá el ciclo normal, sin ceremonia de más.
+2. **Si no existe → NO toques código de la capa todavía.** Escribí el ADR técnico de system design: separación UI/lógica, qué lógica SÍ vive en el cliente y de qué tipo (presentación/UX/estado/cache/validación optimista), rendimiento, y reutilización entre módulos. **La lógica de negocio y la autorización viven SOLO en el backend** (el cliente oculta por UX, nunca decide permisos ni muta estado financiero).
+3. **Presentá el ADR al humano y esperá su validación** (propone/valida, como el Modo A). No auto-apruebes una decisión de arquitectura/UI.
+4. **Recién entonces** implementá la UI siguiendo el ADR; la spec referencia el ADR en `Decisión de diseño previa:`.
+
+El objetivo: que elegir el system design tarde no implique reescribir el frontend, y que todos los módulos (pagos, socios, clases) reutilicen un mismo patrón de frontend. Es secuencia documentada; el gate no cambia ni lee ADRs de frontend.
+
 Un chequeo rápido opcional, confirmado con comandos y cobertura reales del perfil, sirve para iterar. Su resultado no sustituye el gate raíz ni los controles obligatorios de la DoD al cerrar cualquier nivel. El agente no omite suites ni reduce el gate por reclasificar una tarea.
 
 ### 8. Desarrollo y continuidad de sesión

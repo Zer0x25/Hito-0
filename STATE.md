@@ -4,15 +4,16 @@
 - Base revisada: `46c519b` (Seed 007).
 - Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Última unidad — Seed 012 (V5.2)
+## Última unidad — Seed 013 (V5.3)
 
-- Meta: alinear el gate con la política de HITO0_PENDING — cerrar la fricción F-01 del harness-metrics.
-- Unidad: [Seed 012](specs/seed-012-gate-pendientes.md), Tier 1; autoridad del usuario «aprobado», 2026-10-12.
-- Decisión de diseño: `HITO0_PENDING` sale del patrón de placeholders críticos y pasa a pendiente legítimo rastreado. El gate lo cuenta y advierte por fase (initializing advierte; project advierte + exige registro en STATE o falla; seed no corre). Los demás placeholders `[...]` siguen bloqueando igual (quirúrgico). Sin ADR de proyecto nuevo (espacio 0007+ libre). ADR anteriores intactos.
-- Estado: cerrada; CA-1–CA-5 verificados con ciclo rojo→verde a nivel de contrato. F-01 cerrada en harness-metrics. Cambios locales sin commit (sin política de commits autorizada).
-- Evidencia: `./scripts/verify.sh` salida 0; contrato 94/94 (90 previos + 4 de Seed 012, con rojo confirmado pre-fix volteado a verde); `git diff --check` 0; ADR 0000–0006 intactos.
-- Commit: pendiente de autorización del usuario. Probable release V5.2 (commit + tag v5.2.0 + release) tras autorización.
-- Siguiente paso: definir próxima fricción/unidad. F-02 (unidades "pendiente de revisión humana" sin mecanismo de cierre) queda como observación. Sin unidad activa.
+- Meta: protocolo de preparación de capa — system design (ADR técnico) validado por el humano antes de tocar una capa nueva; cierra la fricción F-03.
+- Unidad: [Seed 013](specs/seed-013-preparacion-capa.md), Tier 1; autoridad del usuario «aprobado», 2026-10-12.
+- Decisión de diseño: el ciclo de una unidad dice *qué* hacer; este protocolo dice *cómo preparar la siguiente* cuando toca UI/frontend/offline. Si no hay ADR de system design de la capa, el agente lo escribe, lo presenta al humano (propone/valida) y recién implementa; la lógica de negocio y autorización quedan SOLO en backend; el ADR es reutilizable entre módulos. Es guía/secuencia, no toca el gate. Sin ADR de proyecto nuevo (espacio 0007+ libre). ADR anteriores intactos.
+- Estado: cerrada; CA-1–CA-5 verificados. F-03 cerrada en harness-metrics. Cambios locales sin commit (sin política de commits autorizada).
+- Evidencia: `./scripts/verify.sh` salida 0; contrato 94/94 (sin cambios de comportamiento); `git diff --check` 0; ADR 0000–0006 intactos.
+- Nota de supervisión: GYM-2026 permanece en V5.0 por diseño — no se le empujan los fixes del molde; las fricciones se aprenden sobre su base congelada.
+- Commit: pendiente de autorización del usuario. Probable release V5.3 (commit + tag v5.3.0 + release) tras autorización.
+- Siguiente paso: definir próxima fricción/unidad. F-02 (revisiones humanas sin mecanismo de cierre) sigue como observación. Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 
 ## Cobertura y límites

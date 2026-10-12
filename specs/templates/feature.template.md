@@ -7,6 +7,7 @@
 > Contexto (Notion): [URL o ID de la página de origen; vacío si no aplica]
 > Trazabilidad: [SPEC:<id> por criterio que vincule con la database de decisiones de Notion; opcional]
 > Sesión: [ruta del export de sesión en docs/sessions/ que dio origen a esta unidad; opcional — ritual de cierre de Seed 011]
+> Decisión de diseño previa: [ADR técnico de system design de la capa si esta unidad toca una capa nueva (UI/frontend, offline); "ninguna" si la capa ya está cubierta — ver Seed 013]
 > Aceptación: [Quién, fecha y autoridad; delegación y justificación si autoaceptada]
 
 **Sobre el contexto de Notion:** `Contexto (Notion)` enlaza el *por qué* (decisiones de negocio, research) sin duplicarlo. Notion nunca es fuente de verdad ejecutable — el repo lo es; el gate no depende de Notion. `Trazabilidad` usa tags `SPEC:<id>` (ej. `SPEC:MVP-CUT-01`) que mapean a `specs/<id>.md`; un enlace a spec inexistente advierte, nunca bloquea (fail-safe).

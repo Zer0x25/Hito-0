@@ -25,6 +25,10 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 
 - `HITO0_PENDING` deja de ser placeholder crítico bloqueante en PRD/PROMPT-MAESTRO/ADR-0002: el gate lo cuenta y advierte por fase (initializing advierte; project advierte + exige que los pendientes queden registrados en STATE, o falla; seed no corre). Los demás placeholders `[...]` siguen bloqueando. Cierra la fricción F-01; elimina el workaround de redactar los archivos sellados sin el marcador.
 
+## Cambios de Seed 013
+
+- Protocolo de preparación de capa: antes de implementar una unidad que toca una capa nueva (UI/frontend, offline, dominio con superficie de usuario) sin decisión de diseño previa, el agente escribe un ADR técnico de system design, lo valida con el humano (propone/valida) y recién implementa. La lógica de negocio y autorización quedan SOLO en backend; el ADR es reutilizable entre módulos. Guía en `docs/templates/adr-frontend.md`; campo `Decisión de diseño previa:` en la spec. Cierra la fricción F-03; el gate no cambia.
+
 ## Tamaño de STATE
 
 Mantener meta, unidad activa, bloqueos, siguiente paso y cierres recientes. Al superar diez cierres, mover los más antiguos íntegros a `docs/history/` con enlace desde STATE. No archivar trabajo activo, autorizaciones aún necesarias ni contadores pendientes. IDs y evidencia siguen siendo consultables; Git no reemplaza el enlace al historial.
