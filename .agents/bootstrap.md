@@ -111,7 +111,7 @@ Antes de crear artefactos, presenta un resumen breve con decisiones confirmadas,
 
 ### Ritual de cierre de sesión (opt-in)
 
-Si la sesión dejó commits, antes de cerrarla: exportá la conversación con `hermes sessions export --format md --cwd <repo>` a `docs/sessions/<fecha>-<titulo>.md` y commiteala junto a la unidad. Enlazá el export en la spec con el campo opcional `Sesión:`. Es **opt-in**: si no exportás, el gate pasa igual (evidencia adicional, no requisito). El export se redacta por defecto; nunca guardes tokens/API keys. Cada aprendizaje del flujo va a `docs/learning.md` con el formato canónico.
+Si la sesión dejó commits, antes de cerrarla: exportá la conversación del harness a `docs/sessions/<fecha>-<titulo>.md` y commiteala junto a la unidad. Enlazá el export en la spec con el campo opcional `Sesión:`. Es **opt-in**: si no exportás, el gate pasa igual (evidencia adicional, no requisito). El export se redacta por defecto; nunca guardes tokens/API keys. Cada aprendizaje del flujo va a `docs/learning.md` con el formato canónico.
 
 Cuando estén creados el PRD, el ADR, el perfil, la plantilla personalizada, el prompt maestro, aprendizaje, el verificador y la CI:
 

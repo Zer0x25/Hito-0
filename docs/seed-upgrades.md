@@ -32,7 +32,13 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 ## Cambios de Seed 014 (V5.4) — Robustez de base
 
 - **Fix Tier 3 ↔ gate:** `verify-scope.sh` reconoce unidades ligeras `LIG-*` (Tier 3, autorizadas por política a vivir en STATE sin spec). Lee sus rutas de `Alcance/autoridad:` en STATE (partiendo por `,` y `;`, descartando autor/fecha) y verifica el alcance contra ellas; una ruta fuera de la lista sigue siendo SCOPE VIOLATION; una unidad de negocio sin spec ni bloque LIG sigue siendo violación (no se abre la puerta a commits sin alcance); bloque de STATE no parseable → fail-safe (advierte, no bloquea). Cierra la fricción F-04. Contrato 94→97 (BDD-1/2/3).
-- **Decisiones transversales obligatorias:** antes de tocar código de un dominio, el ADR base declara modelo de errores, contexto tenant/auth en backend y estrategia de tests. Se cierran una vez por dominio, se validan con el humano y los módulos siguientes las reutilizan (sin ceremonia si ya están). Documentado en AGENTS §7 y referenciado en PROMPT-MAESTRO; el gate no cambia ni lee ADRs de dominio. Cierra la fricción F-05.
+- **Decisiones transversales obligatorias:** antes de tocar código de un dominio, el ADR base declara modelo de errores, contexto tenant/auth en backend y estrategia de tests. Se cierran una vez por dominio, se validan con el humano y los módulos siguientes las reutilizan (sin ceremonia si ya están). Documentado en AGENTS §7 + PROMPT-MAESTRO; el gate no cambia ni lee ADRs de dominio. Cierra la fricción F-05.
+
+## Cambios de Seed 015 (V5.5) — Higiene del molde
+
+- Extracción de capacidades: los bloques acumulados de AGENTS (Seeds 009/010/011/013/014) se trasladan íntegros a `docs/flujo-capacidades.md`; AGENTS queda como protocolo estable con punteros. El archivo de capacidades es referenciado por enlace, NO agregado a los requeridos del gate (no endurecer el gate por un doc referenciado).
+- Neutralidad de harness: el ritual de cierre de sesión deja de nombrar `hermes sessions export` como obligación en los documentos vivos (AGENTS/README/bootstrap); la convención es genérica y el comando concreto queda como ejemplo en el archivo de capacidades. El registro histórico de Seed 011 (que documenta que el export fue verificado) se preserva intacto: es evidencia, no política viva.
+- Sin cambios de comportamiento: `scripts/` intacto byte a byte; contrato 97/97; gate exit 0.
 
 ## Tamaño de STATE
 

@@ -4,16 +4,16 @@
 - Base revisada: `46c519b` (Seed 007).
 - Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Última unidad — Seed 014 (V5.4) — Robustez de base
+## Última unidad — Seed 015 (V5.5) — Higiene del molde
 
-- Meta: dos robustecimientos de base con evidencia de la auditoría del flujo y del derivado. (1) El gate deja de contradecir la política de Tier 3 (fix F-04). (2) Decisiones transversales obligatorias antes de tocar un dominio (F-05).
-- Unidad: [Seed 014](specs/seed-014-robustez-base.md), Tier 1; autoridad del usuario «hazlo», 2026-10-12.
-- Decisión de diseño: (1) `verify-scope.sh` reconoce `LIG-*` y verifica el alcance contra las rutas del bloque de STATE (fail-safe); ruta fuera de lista sigue siendo violación y una unidad sin spec ni LIG sigue siendo violación — el fix es quirúrgico, no abre la puerta a commits sin alcance. (2) Errores / tenant-auth / estrategia de tests se cierran una vez por dominio en el ADR base, validadas por el humano y reutilizadas por módulos siguientes; documentado en AGENTS §7 + PROMPT-MAESTRO; el gate no lee ADRs de dominio. Rojo primero (control bloqueante modificado). Sin ADR de proyecto nuevo (espacio 0007+ libre); ADR 0000–0006 intactos.
-- Estado: cerrada; CA-1–CA-6 verificados. F-04 y F-05 cerradas en harness-metrics. Cambios locales sin commit (sin política de commits autorizada).
-- Evidencia: `./scripts/verify.sh` salida 0; contrato 97/97 (BDD-1/2/3 nuevos, 94 previos intactos; BDD-1 RED pre-fix confirmada); `bash -n scripts/verify-scope.sh` OK; `git diff --check` 0; ADR 0000–0006 intactos byte a byte vs v5.2.0.
+- Meta: dos higienas sin cambio de comportamiento. (1) Extraer las capacidades acumuladas de AGENTS a `docs/flujo-capacidades.md`. (2) Desacoplar el ritual de cierre de sesión de `hermes sessions export` en los documentos vivos.
+- Unidad: [Seed 015](specs/seed-015-higiene-molde.md), Tier 1 (toca política viva); autoridad del usuario «aprobado», 2026-10-12.
+- Decisión de diseño: los bloques de Seeds 009/010/011/013/014 se MUDAN íntegros (no se resumen) a `docs/flujo-capacidades.md`; AGENTS queda como protocolo estable con punteros. El archivo de capacidades es referenciado por enlace y NO entra a los requeridos del gate (anti-sobreingeniería). La convención de sesión pasa a genérica; el comando concreto de Hermes vive solo como ejemplo en el archivo de capacidades. El registro histórico de Seed 011 (export verificado) se preserva intacto — es evidencia, no política viva. Sin cambios de comportamiento → verificación en verde, sin fase roja artificial (AGENTS §2.7). Sin ADR nuevo (espacio 0007+ libre); ADR 0000–0006 intactos.
+- Estado: cerrada; CA-1–CA-6 verificados. Cambios locales sin commit (sin política de commits autorizada).
+- Evidencia: `./scripts/verify.sh` exit 0, contrato 97/97 (scripts intactos byte a byte); `grep hermes AGENTS.md README.md .agents/bootstrap.md` sin coincidencias; specs seed-001..014 intactas; anclas del piloto presentes (AGENTS L5/L9); AGENTS 25.2K→20.8K, flujo-capacidades.md 8.2K con bloques íntegros.
 - Nota de supervisión: GYM-2026 permanece en V5.0 por diseño — no se le empujan los fixes del molde; las fricciones se aprenden sobre su base congelada.
-- Commit: pendiente de autorización del usuario. Probable release V5.4 (commit + tag v5.4.0 + release) tras autorización.
-- Siguiente paso: definir próxima fricción/unidad. F-02 (revisiones humanas sin mecanismo de cierre) sigue como observación. Sin unidad activa.
+- Commit: pendiente de autorización del usuario. Probable release V5.5 (commit + tag v5.5.0 + release) tras autorización.
+- Siguiente paso: definir próxima unidad. F-02 (revisiones humanas sin mecanismo de cierre) sigue como observación. Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 
 ## Cobertura y límites
