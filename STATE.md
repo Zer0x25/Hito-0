@@ -4,15 +4,15 @@
 - Base revisada: `46c519b` (Seed 007).
 - Historia conservada: [Seeds 001–007](docs/history/seed-001-007.md). Sus permisos de publicación no se reutilizan para esta unidad.
 
-## Última unidad — Seed 015 (V5.5) — Higiene del molde
+## Última unidad — Seed 016 (V5.6) — Índice canónico de ADR + limpieza de base
 
-- Meta: dos higienas sin cambio de comportamiento. (1) Extraer las capacidades acumuladas de AGENTS a `docs/flujo-capacidades.md`. (2) Desacoplar el ritual de cierre de sesión de `hermes sessions export` en los documentos vivos.
-- Unidad: [Seed 015](specs/seed-015-higiene-molde.md), Tier 1 (toca política viva); autoridad del usuario «aprobado», 2026-10-12.
-- Decisión de diseño: los bloques de Seeds 009/010/011/013/014 se MUDAN íntegros (no se resumen) a `docs/flujo-capacidades.md`; AGENTS queda como protocolo estable con punteros. El archivo de capacidades es referenciado por enlace y NO entra a los requeridos del gate (anti-sobreingeniería). La convención de sesión pasa a genérica; el comando concreto de Hermes vive solo como ejemplo en el archivo de capacidades. El registro histórico de Seed 011 (export verificado) se preserva intacto — es evidencia, no política viva. Sin cambios de comportamiento → verificación en verde, sin fase roja artificial (AGENTS §2.7). Sin ADR nuevo (espacio 0007+ libre); ADR 0000–0006 intactos.
+- Meta: componer la base de ADR sin contradicciones ni frases muertas. Índice canónico de precedencia/numeración + corrección quirúrgica de ADR 0000 + limpieza de frases muertas en 0003/0004/0005.
+- Unidad: [Seed 016](specs/seed-016-indice-adr.md), Tier 1 (toca los ADR del molde); autoridad del usuario «hazlo», 2026-10-12.
+- Decisión de diseño: `docs/adr/README.md` = fuente única de precedencia (anfitrión/usuario → AGENTS → ADR histórico), numeración (0000–0006 molde / 0002 y 0007+ derivado / seeds no consumen números) y tabla de decisiones; lista las convenciones vivas (Notion, trazabilidad, sesión, capa, transversales, LIG-*) como NO-ADR. ADR 0000 corrige 2 contradicciones puntuales (prevalencia absoluta → apunta a 0006; DomainError universal → ejemplo de perfil TypeScript, 0001) + nota de cabecera al índice. ADR 0003/0004/0005: frases «siguiente número libre» → puntero al índice. ADR 0001/0006 intactos. Docs-only sin cambio de comportamiento → verde, sin fase roja artificial. Sin ADR nuevo: el índice es documentación de gobernanza.
 - Estado: cerrada; CA-1–CA-6 verificados. Cambios locales sin commit (sin política de commits autorizada).
-- Evidencia: `./scripts/verify.sh` exit 0, contrato 97/97 (scripts intactos byte a byte); `grep hermes AGENTS.md README.md .agents/bootstrap.md` sin coincidencias; specs seed-001..014 intactas; anclas del piloto presentes (AGENTS L5/L9); AGENTS 25.2K→20.8K, flujo-capacidades.md 8.2K con bloques íntegros.
+- Evidencia: `./scripts/verify.sh` exit 0, contrato 97/97 (scripts intactos byte a byte); grep de precedencia y frases muertas con resultados esperados (solo el índice como cláusula de supremacía); ADR 0001/0006 intactos byte a byte.
 - Nota de supervisión: GYM-2026 permanece en V5.0 por diseño — no se le empujan los fixes del molde; las fricciones se aprenden sobre su base congelada.
-- Commit: pendiente de autorización del usuario. Probable release V5.5 (commit + tag v5.5.0 + release) tras autorización.
+- Commit: pendiente de autorización del usuario. Probable release V5.6 (commit + tag v5.6.0 + release) tras autorización.
 - Siguiente paso: definir próxima unidad. F-02 (revisiones humanas sin mecanismo de cierre) sigue como observación. Sin unidad activa.
 - Falta de progreso: contador 0, sin bloqueo.
 

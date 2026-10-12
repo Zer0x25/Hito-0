@@ -40,6 +40,13 @@ La versión base se identifica por el commit de semilla registrado en STATE del 
 - Neutralidad de harness: el ritual de cierre de sesión deja de nombrar `hermes sessions export` como obligación en los documentos vivos (AGENTS/README/bootstrap); la convención es genérica y el comando concreto queda como ejemplo en el archivo de capacidades. El registro histórico de Seed 011 (que documenta que el export fue verificado) se preserva intacto: es evidencia, no política viva.
 - Sin cambios de comportamiento: `scripts/` intacto byte a byte; contrato 97/97; gate exit 0.
 
+## Cambios de Seed 016 (V5.6) — Índice canónico de ADR + limpieza de base
+
+- `docs/adr/README.md` pasa a ser la fuente única de precedencia (anfitrión/usuario → AGENTS → ADR histórico), numeración (0000–0006 molde / 0002 y 0007+ derivado / seeds no consumen números) y tabla de qué decide y qué reemplaza cada ADR. Lista las convenciones vivas (Notion, trazabilidad, sesión, capa, transversales, LIG-*) como NO-ADR — nombradas, no absorbidas.
+- ADR 0000 corrige dos contradicciones puntuales contra la política viva: la prevalencia absoluta (ahora apunta a ADR 0006) y la regla `DomainError`/`errors.ts` como universal (ahora ejemplo de perfil TypeScript, ADR 0001). Nota de cabecera que remite al índice.
+- ADR 0003/0004/0005 dejan de citar «siguiente número libre» (frases muertas) y apuntan al índice. ADR 0001 y 0006 intactos (patrón de política correcta).
+- Docs-only: `scripts/` intacto byte a byte; contrato 97/97; gate exit 0.
+
 ## Tamaño de STATE
 
 Mantener meta, unidad activa, bloqueos, siguiente paso y cierres recientes. Al superar diez cierres, mover los más antiguos íntegros a `docs/history/` con enlace desde STATE. No archivar trabajo activo, autorizaciones aún necesarias ni contadores pendientes. IDs y evidencia siguen siendo consultables; Git no reemplaza el enlace al historial.

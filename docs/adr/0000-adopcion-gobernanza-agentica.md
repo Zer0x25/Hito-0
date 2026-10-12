@@ -3,6 +3,7 @@
 - **Fecha:** 2026-10-03
 - **Estado:** Aceptado
 - **Afecta a:** Todo el repositorio y ciclos de vida de desarrollo con agentes autónomos
+- **Nota de gobernanza:** la *precedencia* de este ADR quedó aclarada por ADR 0006 (los documentos del repo no prevalecen sobre el anfitrión ni el usuario) y su *neutralidad de stack* por ADR 0001 (el código TypeScript es ejemplo de perfil, no requisito universal). Ver [índice de ADR](README.md). Las secciones siguientes conservan la letra de la adopción original; léanse con esas aclaraciones.
 
 ---
 
@@ -25,7 +26,7 @@ Se adopta formalmente la metodología de **Gobernanza Agéntica** compuesta por 
 
 2. **Architecture Decision Records (ADRs):**
    - Toda decisión arquitectónica, selección de stack o cambio de paradigma queda documentada de forma inmutable en `docs/adr/`.
-   - Los ADRs prevalecen sobre cualquier instrucción conversacional futura.
+   - Los ADRs son registro histórico; **no prevalecen sobre instrucciones del anfitrión ni del usuario** (aclarado por ADR 0006; ver [índice](README.md)).
 
 3. **Agentic Test-Driven Development (Agentic TDD):**
    - El agente debe escribir primero la suite de pruebas unitarias/integración contra los criterios de aceptación (Fase Roja).
@@ -39,7 +40,7 @@ Se adopta formalmente la metodología de **Gobernanza Agéntica** compuesta por 
 ## 3. Reglas Inmutables para Agentes de IA
 - **Contratos Cerrados:** No edites archivos fuera de la lista de archivos autorizados en la especificación activa.
 - **Invariantes Negativas:** Si un requerimiento prohíbe un comportamiento (ej. saldo negativo o persistencia en texto plano), debes crear pruebas unitarias que verifiquen el rechazo de ese comportamiento.
-- **Errores de Dominio:** Prohibido el uso de `throw new Error()` genéricos. Todos los errores deben heredar de `DomainError` en `src/core/errors.ts` y poseer códigos de dominio tipados.
+- **Errores de Dominio:** prohibido el uso de errores genéricos sin código de dominio. En un perfil TypeScript, los errores heredan de un tipo base (ej. `DomainError` en `src/core/errors.ts`) con códigos de dominio tipados; en otro stack, el mecanismo equivalente que defina su arquitectura (ADR 0001: ejemplo de perfil, no requisito universal).
 - **Convención de Commits:** Apegarse estrictamente a Conventional Commits (`feat`, `fix`, `test`, `refactor`, `chore`).
 
 ---
