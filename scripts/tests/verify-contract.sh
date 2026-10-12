@@ -220,6 +220,48 @@ git -C "$scoped" update-ref -d refs/remotes/origin/main
 printf 'cualquier cambio\n' >> "$scoped/src/core/keep.ts"
 assert_gate 0 "$scoped" 'no base omits scope-lock without blocking'
 
+# --- Seed 010: Notion arranque (dos modos, fail-safe, trazabilidad) ----------
+# notion-context.sh: sin argumentos falla con código de uso.
+if bash "$REPO_ROOT/scripts/notion-context.sh" >/dev/null 2>&1; then
+  FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: notion-context sin argumentos debe fallar\n'
+else PASS_COUNT=$((PASS_COUNT + 1)); fi
+
+# notion-context.sh: URL de Notion sin sesión de agente → fail-safe, payload válido, exit 0.
+nc_dir="$TEMP_ROOT/notion-ctx"
+mkdir -p "$nc_dir"
+if out="$(cd "$nc_dir" && bash "$REPO_ROOT/scripts/notion-context.sh" "https://app.notion.com/p/abc123" ctx.md 2>&1)"; then
+  if grep -q '[^[:space:]]' "$nc_dir/ctx.md" && [[ "$out" == *NOTION*WARNING* || "$out" == *diferida* ]]; then
+    PASS_COUNT=$((PASS_COUNT + 1))
+  else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: notion-context fail-safe no advirtió o payload vacío\n%s\n' "$out"; fi
+else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: notion-context fail-safe debe salir 0\n%s\n' "$out"; fi
+
+# notion-context.sh: markdown precocinado por el agente se adopta tal cual.
+printf '# Contexto\nDecisiones confirmadas del proyecto.\n' > "$nc_dir/cooked.md"
+(cd "$nc_dir" && bash "$REPO_ROOT/scripts/notion-context.sh" cooked.md adopted.md >/dev/null 2>&1)
+if grep -q 'Decisiones confirmadas' "$nc_dir/adopted.md"; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: notion-context no adoptó markdown del agente\n'; fi
+
+# Trazabilidad: tag SPEC:<id> a spec inexistente advierte, no bloquea el gate.
+trace="$TEMP_ROOT/trace"
+make_scoped_project "$trace"
+sed -i 's/^> Estado: Cerrada/> Estado: Cerrada\n> Trazabilidad: SPEC:MVP-CUT-01/' "$trace/specs/SCOPED-001.md"
+if out="$(cd "$trace" && bash scripts/verify-scope.sh 2>&1)"; then
+  if [[ "$out" == *TRACE*WARNING* || "$out" == *Alcance*verificado* || "$out" == *MVP-CUT-01* ]]; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: trazabilidad a spec inexistente no advirtió\n%s\n' "$out"; fi
+else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: trazabilidad a spec inexistente bloqueó el gate\n%s\n' "$out"; fi
+
+# El gate raíz NO depende de Notion: verify.sh no invoca notion-context.
+if grep -q 'notion-context' "$REPO_ROOT/scripts/verify.sh"; then
+  FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: verify.sh no debe depender de Notion\n'
+else PASS_COUNT=$((PASS_COUNT + 1)); fi
+
+# Gate de capacidad (CA-8): cuando el entorno no puede leer Notion, la salida
+# "pegar a mano" (notion-context.sh adoptando markdown) NO bloquea — exit 0 y
+# el gate de semilla sigue en verde. Es el fail-safe que reemplaza al Modo A.
+nc_dir2="$TEMP_ROOT/notion-nocap"
+mkdir -p "$nc_dir2"
+(cd "$nc_dir2" && bash "$REPO_ROOT/scripts/notion-context.sh" "sin-capacidad-de-lectura" out.md >/dev/null 2>&1)
+rc=$?
+if [[ $rc -eq 0 ]] && grep -q '[^[:space:]]' "$nc_dir2/out.md"; then PASS_COUNT=$((PASS_COUNT + 1)); else FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: salida "pegar a mano" sin capacidad debe ser fail-safe exit 0 (rc=%s)\n' "$rc"; fi
+
 hook_repo="$TEMP_ROOT/hooks"
 mkdir -p "$hook_repo/scripts" "$hook_repo/.githooks"
 git -C "$hook_repo" init --quiet

@@ -32,6 +32,8 @@ Los ADR aceptados se conservan. [ADR 0006](docs/adr/0006-gobernanza-verificable.
 
 **Gobernanza ejecutable (Seed 009, V4.1):** en `phase=project` el gate aplica scope-lock mecánico (cambios fuera de «Archivos autorizados» de la unidad activa bloquean el commit) y evidencia por criterio en unidades Cerradas. Fallo seguro ante lo no parseable: advierte y omite, nunca bloquea por no entender.
 
+**Arranque con Notion (Seed 010, V5):** el arranque de Hito 1 tiene dos modos. **Modo A (enriquecido):** el agente lee la página contenedora y la database de decisiones de Notion del proyecto y propone PRD/ADR/specs trasladando cada decisión con su estado (`Confirmada` → aceptada, `Pendiente` → `HITO0_PENDING`). **Modo B (desde cero):** entrevista estándar; al sellar, el agente crea la página y database en Notion con lo confirmado. Notion es *contexto* (el por qué), nunca fuente de verdad ejecutable; el gate no depende de Notion. Cada spec lleva `Contexto (Notion): <url>` y `Trazabilidad: SPEC:<id>`. Linear queda para V5.5.
+
 ## Trabajo proporcional al riesgo
 
 | Nivel | Uso | Registro |

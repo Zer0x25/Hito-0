@@ -117,5 +117,17 @@ if printf '%s' "$unit_status" | grep -qi 'cerrada'; then
   fi
 fi
 
+# --- Trazabilidad (Seed 010): SPEC:<id> tags map to specs/<id>.md ------------
+# Non-blocking: a trace to a missing spec warns; it never blocks the gate.
+trace_line="$(grep -iE '^>?[[:space:]]*Trazabilidad:' "$spec_file" | head -1)"
+if [[ -n "$trace_line" ]]; then
+  mapfile -t trace_ids < <(printf '%s\n' "$trace_line" | grep -oE 'SPEC:[A-Za-z0-9._-]+' | sed -E 's/^SPEC://' | sort -u)
+  for tid in "${trace_ids[@]}"; do
+    if [[ ! -f "specs/${tid}.md" ]]; then
+      warn "trazabilidad SPEC:$tid apunta a specs/${tid}.md inexistente (documenta, no bloquea)."
+    fi
+  done
+fi
+
 [[ "$MODE" == check ]] && printf 'Alcance verificado para %s: %d rutas contra %s.\n' "$unit_id" "${#changed[@]}" "$base"
 exit 0

@@ -23,7 +23,30 @@ Lee `.agents/project-profile.conf`. Con `phase=seed`, ejecuta `scripts/verify.sh
 
 ## Fase 2: Entrevista adaptativa
 
-Mantén un registro provisional de decisiones con estado `confirmada`, `pendiente`, `supuesto` o `no_aplica`. Pregunta en grupos de hasta dos elementos, adaptándote a lo que ya respondió el usuario. Cubre lo pertinente de estas áreas:
+### Modo de arranque: con Notion o desde cero
+
+Antes de la entrevista, **verifica la capacidad de leer Notion en tu entorno** (no asumas que existe):
+
+1. **Detecta:** ¿tienes alguna tool disponible para leer Notion? (Hermes: conector MCP de Notion; Antigravity: `agy mcp`; Codex/OpenCode: su config MCP). Cada harness gestiona sus propias tools; no hay un Notion universal.
+2. **Si SÍ** → ofrece Modo A (enriquecido) normalmente.
+3. **Si NO** → no falles: sugiere conectarse y ofrece tres salidas, en este orden:
+   - *"Conectá Notion en tu entorno"* — indica cómo según el harness (Hermes: conector/connect OAuth; Antigravity: `agy mcp`; Codex/OpenCode: servidor MCP de Notion en su config). Luego reintenta Modo A.
+   - *"Pegá el contexto de Notion a mano"* — el humano pega el markdown; `scripts/notion-context.sh` lo adopta tal cual (camino soportado, no un parche).
+   - *"Arrancá en Modo B (desde cero)"* — entrevista estándar.
+
+En cualquier caso, **el gate nunca depende de Notion**: si no hay capacidad de lectura, es el mismo fail-safe que ya existe (advierte, cae a entrevista). El molde sugiere y respeta; no impone un conector ni se acopla a un harness.
+
+### Modo A — enriquecido (hay material en Notion y capacidad de leerlo)
+
+El humano indica *"Inicia Hito-1 leyendo `<url o id de Notion>`"*. Lee la página contenedora y la database de decisiones vía las tools MCP de Notion (`GET_PAGE_MARKDOWN`; para la database, `NOTION_FETCH_DATA`/query) en tu sesión — las tools MCP no se invocan desde shell. Traslada cada decisión con su estado: `Confirmada` → aceptada en el repo; `Pendiente` → `HITO0_PENDING`. No inventes contenido ausente ni promociones pendientes. La entrevista se vuelve *validación*: presenta la propuesta de PRD/ADR/specs derivada de Notion y el humano confirma o corrige. Si Notion no responde o no está compartido, advierte y continúa con entrevista estándar (fail-safe).
+
+### Modo B — desde cero (no hay material en Notion)
+
+Entrevista estándar con el humano. Al sellar (Fase 4), crea la página contenedora y la database de decisiones en Notion con lo confirmado (vía MCP), para que Notion nazca poblado desde el repo. Si en el sellado tampoco hay capacidad de escribir en Notion, advierte y deja el repo como fuente; no bloquees el sellado.
+
+En ambos modos, cada spec del derivado llevará `Contexto (Notion): <url>` y opcionalmente `Trazabilidad: SPEC:<id>`. Notion es contexto, nunca fuente de verdad ejecutable; el gate no depende de Notion.
+
+Mantén un registro provisional de decisiones con estado `confirmada`, `pendiente`, `supuesto` o `no_aplica`. Pregunta en grupos de hasta dos elementos, adaptándote a lo ya respondido. Cubre lo pertinente de estas áreas:
 
 - Nombre, problema, resultado esperado y qué queda fuera.
 - Actores, flujos principales, entidades o datos y sus relaciones.

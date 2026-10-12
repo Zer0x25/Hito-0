@@ -4,7 +4,11 @@
 > Nivel: Tier 2 — Estándar | Tier 1 — Riesgo alto | Tier 3 con spec si no se autoriza registro ligero; justificación: [efecto, contrato y riesgo]
 > Requisitos: [IDs de PRD.md o mantenimiento de semilla]
 > ADR aplicables: [Rutas o ninguno]
+> Contexto (Notion): [URL o ID de la página de origen; vacío si no aplica]
+> Trazabilidad: [SPEC:<id> por criterio que vincule con la database de decisiones de Notion; opcional]
 > Aceptación: [Quién, fecha y autoridad; delegación y justificación si autoaceptada]
+
+**Sobre el contexto de Notion:** `Contexto (Notion)` enlaza el *por qué* (decisiones de negocio, research) sin duplicarlo. Notion nunca es fuente de verdad ejecutable — el repo lo es; el gate no depende de Notion. `Trazabilidad` usa tags `SPEC:<id>` (ej. `SPEC:MVP-CUT-01`) que mapean a `specs/<id>.md`; un enlace a spec inexistente advierte, nunca bloquea (fail-safe).
 
 Usa esta plantilla para Tier 2/1 según AGENTS y ADR 0005, o como alternativa si no se autoriza el registro ligero. En Tier 2 conserva secciones breves y pertinentes; Tier 1 detalla invariantes, riesgos y verificación. Tier 3 puede usar el registro ligero en STATE si está autorizado; no necesita generar esta spec. Un cambio de decisión significativa requiere además ADR, no sustituir la spec por él. No crees ni actualices PRD por cada tarea.
 
